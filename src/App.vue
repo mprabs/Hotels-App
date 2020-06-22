@@ -1,12 +1,36 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
+      <h3 class="alert alert-primary shadow p-3 mb-5 bg-white rounded" role="alert"> 
+      Hotel App
+      </h3>
+      </div>
     <router-view />
   </div>
 </template>
+
+<script>
+// import login from "./views/login.vue"
+
+export default {
+  // components: {
+  //   login
+  // }
+  data() {
+    return {
+      hidden: false
+    };
+  },
+  methods: {
+    login() {
+      this.$router.replace({ name: "login" });
+    }
+  },
+  mounted() {
+    this.login();
+  }
+};
+</script>
 
 <style lang="scss">
 #app {
@@ -25,7 +49,7 @@
     color: #2c3e50;
 
     &.router-link-exact-active {
-      color: #42b983;
+      color: #adadad;
     }
   }
 }
