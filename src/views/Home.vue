@@ -126,8 +126,8 @@
           </div>
           <div
             v-else
-            v-for="booking in bookings"
-            :key="booking"
+            v-for="(booking, index) in bookings"
+            :key="index"
             class="modal-body"
           >
             Hotel: {{ booking.hotel }} <br />
@@ -135,6 +135,7 @@
             Date to: {{ booking.to }} <br />
             Number of rooms: {{ booking.room }} <br />
             <br />
+            <button class="btn btn-danger" data-dismiss="modal" @click="cancelBooking(index)" > Cancel </button>
           </div>
           <div class="modal-footer">
             <button data-dismiss="modal">Close</button>
@@ -259,6 +260,10 @@ export default {
         room: this.numberOfRooms,
       });
     },
+    cancelBooking(id) {
+      this.bookings.splice(id, 1)
+      alert(this.bookings)
+    }
   },
   computed: {
     columns() {
