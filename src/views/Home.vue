@@ -1,6 +1,8 @@
 <template>
   <div class="home">
-    <p v-if="isBooked"> Successfully Booked !</p><br />
+    <p v-if="isBooked"> Successfully Booked !</p>
+    <p v-else-if="isCancelled"> Successfully Cancelled ! </p>
+    <br />
     <button
       @click="seeBookings()"
       data-toggle="modal"
@@ -234,6 +236,7 @@ export default {
       bookTo: "",
       bookings: [],
       isBooked: false,
+      isCancelled: false,
     };
   },
   methods: {
@@ -260,9 +263,13 @@ export default {
         room: this.numberOfRooms,
       });
     },
-    cancelBooking(id) {
+    async cancelBooking(id) {
       this.bookings.splice(id, 1)
-      alert(this.bookings)
+      this.isCancelled = true;
+      await setTimeout(() => {
+        this.isCancelled = false
+      }, 3000)
+      window.location.reload();
     }
   },
   computed: {
