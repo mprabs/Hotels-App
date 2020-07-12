@@ -1,35 +1,41 @@
 <template>
   <div class="home">
-    <p v-if="isBooked"> Successfully Booked !</p>
-    <p v-else-if="isCancelled"> Successfully Cancelled ! </p>
-    <br />
+    <a class="logout-button float-right" @click="logout()">Logout</a>
     <button
-      @click="seeBookings()"
+      data-toggle="modal"
+      class="btn btn-outline-danger float-left"
+      style="margin-left: 150px"
+      data-target="#addHotel"
+    >
+      Add new hotel
+    </button>
+    <button
       data-toggle="modal"
       data-target="#seeBookings"
-      style="margin-right: 150px"
-      class="btn btn-outline-danger float-right"
+      style="margin-left: 20px"
+      class="btn btn-outline-danger float-left"
     >
-      See my bookings
-    </button>
-
-    <button data-toggle="modal" 
-      class="btn btn-outline-danger float-right"
-      style="margin-right: 20px"
-     data-target="#addHotel">Add new hotel</button><br />
-    <h1
-      class="float-left"
-      style="margin-left: 100px"
-    >Name of Hotels</h1>
+      See my bookings</button
+    ><br />
+    <p v-if="isBooked">Successfully Booked !</p>
+    <p v-else-if="isCancelled">Successfully Cancelled !</p>
+    <br />
     <div class="container">
       <div class="col" v-for="column in columns" :key="column">
         <div v-for="hotel in column" :key="hotel.id" class="item-container">
           <hr />
-          <h3>{{ 'Hotel ' + hotel.name }}</h3>
-          <p>{{ 'Address : ' + hotel.address || "N/A" }}</p>
+          <h3>{{ "Hotel " + hotel.name }}</h3>
+          <br /><br />
+          <p>{{ "Address : " + hotel.address || "N/A" }} Yoo</p>
+          <br />
           <p>{{ "Number : " + hotel.number || "N/A" }}</p>
+          <br />
           <p>
-            <img :src="hotel.img" class="rounded-lg" style="height: 200px; width: 250px;" />
+            <img
+              :src="hotel.img"
+              class="rounded-lg img-fluid"
+              style="height: 200px; width: 250px;"
+            />
           </p>
           <button
             @click="
@@ -52,59 +58,7 @@
               aria-labelledby="bookModalTitle"
               aria-hidden="true"
             >
-              <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">Booking for {{ hotel.name }}</div>
-                  <div class="modal-body">
-                    <input
-                      type="text"
-                      v-model="book_user_name"
-                      placeholder="Enter your name"
-                    />
-                    <br />
-                    <input
-                      type="number"
-                      v-model="book_user_number"
-                      placeholder="Enter your number"
-                    />
-                    <br />
-                    <select v-model="numberOfRooms">
-                      <option disabled value>Number of rooms</option>
-                      <option>1</option>
-                      <option>2</option>
-                      <option>3</option>
-                    </select>
-                    <br />From
-                    <br />
-                    <input type="date" v-model="bookFrom" />
-                    <br />to
-                    <br />
-                    <input type="date" v-model="bookTo" />
-                    <br />
-                    <br />
-                    <span v-if="numberOfRooms"
-                      >Selected number of rooms: {{ numberOfRooms }}</span
-                    >
-                    <br />
-                    <span v-if="book_user_name"
-                      >Your name: {{ book_user_name }}</span
-                    >
-                    <br />
-                    <span v-if="book_user_number"
-                      >Your number: {{ book_user_number }}</span
-                    >
-                    <br />
-                    <br />
-                    <button
-                      @click="verifyBooking(hotel.name)"
-                      data-dismiss="modal"
-                    >
-                      Verify booking !
-                    </button>
-                    <button data-dismiss="modal">Close</button>
-                  </div>
-                </div>
-              </div>
+              <BookingForm :hotel="hotel" @new-booking="addBooking" />
             </div>
           </div>
 
@@ -120,30 +74,7 @@
       aria-labelledby="seeBookingsTitle"
       aria-hidden="true"
     >
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">Bookings made by me</div>
-          <div v-if="bookings.length === 0">
-            <h4>You have no any bookings right now !</h4>
-          </div>
-          <div
-            v-else
-            v-for="(booking, index) in bookings"
-            :key="index"
-            class="modal-body"
-          >
-            Hotel: {{ booking.hotel }} <br />
-            Date from: {{ booking.from }} <br />
-            Date to: {{ booking.to }} <br />
-            Number of rooms: {{ booking.room }} <br />
-            <br />
-            <button class="btn btn-danger" data-dismiss="modal" @click="cancelBooking(index)" > Cancel </button>
-          </div>
-          <div class="modal-footer">
-            <button data-dismiss="modal">Close</button>
-          </div>
-        </div>
-      </div>
+      <Booking :bookings="bookings" @cancelledItem="cancelBooking" />
     </div>
     <div
       class="modal fade"
@@ -153,24 +84,7 @@
       aria-labelledby="addHotelTitle"
       aria-hidden="true"
     >
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">Add a new hotel</div>
-          <div class="modal-body">
-            <input v-model="new_hotel" placeholder="Hotel Name" />
-            <br />
-            <input v-model="new_address" placeholder="Address" />
-            <br />
-            <input v-model="new_number" placeholder="Number" />
-            <br />
-
-            <button @click="addHotel()">Add</button>
-          </div>
-          <div class="modal-footer">
-            <button data-dismiss="modal">Close</button>
-          </div>
-        </div>
-      </div>
+      <AddHotel @new-hotel="addHotel" />
     </div>
 
     <br />
@@ -182,8 +96,17 @@
 <script>
 // @ is an alias to /src
 
+import Booking from "../components/myBookings";
+import BookingForm from "../components/bookingForm";
+import AddHotel from "../components/addHotel";
+
 export default {
   name: "Home",
+  components: {
+    Booking,
+    BookingForm,
+    AddHotel
+  },
   data() {
     return {
       hotels: [
@@ -192,36 +115,36 @@ export default {
           name: "Hayat",
           address: "Japan",
           number: "123232",
-          img: require("../images/hotel1.jpeg"),
+          img: require("../images/hotel1.jpeg")
         },
         {
           id: 2,
           name: "Sangrila",
           address: "Japan",
           number: "123232",
-          img: require("../images/hotel2.jpeg"),
+          img: require("../images/hotel2.jpeg")
         },
         {
           id: 3,
           name: "Radison",
           address: "Japan",
           number: "123232",
-          img: require("../images/hotel3.jpeg"),
+          img: require("../images/hotel3.jpeg")
         },
         {
           id: 4,
           name: "Everest",
           address: "Japan",
           number: "123232",
-          img: require("../images/hotel1.jpeg"),
+          img: require("../images/hotel1.jpeg")
         },
         {
           id: 5,
           name: "Newww",
           address: "Japan",
           number: "123232",
-          img: require("../images/hotel2.jpeg"),
-        },
+          img: require("../images/hotel2.jpeg")
+        }
       ],
       new_hotel: "",
       new_address: "",
@@ -236,40 +159,45 @@ export default {
       bookTo: "",
       bookings: [],
       isBooked: false,
-      isCancelled: false,
+      isCancelled: false
     };
   },
   methods: {
-    addHotel() {
-      this.hotels.push({
-        name: this.new_hotel,
-        address: this.new_address,
-        number: this.new_number,
-      });
+    addHotel(item) {
+      this.hotels.push(item);
     },
     bookHotel(id) {
       this.isHotelBooked = true;
       this.hotelId = id;
     },
-    verifyBooking(hotel) {
-      console.log(hotel)
-      this.isBooked = hotel.length > 1 ? true : false;
-      this.bookings.push({
-        hotel: hotel,
-        user: this.book_user_name,
-        number: this.book_user_number,
-        from: this.bookFrom,
-        to: this.bookTo,
-        room: this.numberOfRooms,
-      });
+    addBooking(newBooking) {
+      this.isBooked = true;
+      if (this.isBooked) {
+        setTimeout(() => {
+          this.isBooked = false;
+        }, 3000);
+      }
+      this.bookings = [...newBooking, ...this.bookings];
+    },
+    logout() {
+      this.$router.replace({ name: "login" });
+      localStorage.removeItem("user_token");
     },
     async cancelBooking(id) {
-      this.bookings.splice(id, 1)
+      this.bookings.splice(id, 1);
       this.isCancelled = true;
       await setTimeout(() => {
-        this.isCancelled = false
-      }, 3000)
-      window.location.reload();
+        this.isCancelled = false;
+      }, 3000);
+    }
+  },
+  mounted() {
+    if (localStorage.getItem("user_token")) {
+      // do nothing
+      console.log("User token found !");
+    } else {
+      console.log("No user token");
+      this.$router.replace({ name: "Login" });
     }
   },
   computed: {
@@ -280,8 +208,8 @@ export default {
         columns.push(this.hotels.slice(col * mid, col * mid + mid));
       }
       return columns;
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -305,5 +233,19 @@ export default {
 .calendarHeader {
   width: 20%;
   color: #25255c;
+}
+
+.logout-button {
+  color: black;
+  margin-right: 150px;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  color: rgb(205, 81, 50);
+}
+
+.modal-body {
+  text-align: left;
 }
 </style>

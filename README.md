@@ -1,4 +1,8 @@
 # hotels-app
+App Functionalities:
+- List of Hotels
+- Addition of hotel
+- Bookings
 
 ## Project setup
 ```

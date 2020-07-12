@@ -1,15 +1,32 @@
 <template>
-  <div id="login">
-    <p :class="message === 'Please try again !' ? 'text-danger' : 0">{{ message }}</p> <br />
-    <input v-model="user_email" placeholder="Email" /><br />
-    {{ 'eve.holt@reqres.in' }}
-    <br /> <br />
-    <input type="password" v-model="user_password" placeholder="Password" /> <br />
-    {{ 'cityslicka' }}
-    <br />
-    <br />
-    <button class="btn btn-info" @click="login()">Login</button><br /> <br />
-    <br>
+  <div class="login">
+    <div class="card" style="width: 18rem;">
+      <div class="card-header">
+        <p class="header-text">
+          Please fill the details to login
+        </p>
+      </div>
+      <div class="card-body">
+        <b>
+          Email
+        </b>
+        <br />
+        <input v-model="user_email" type="email" placeholder="Email" /><br />
+        <br />
+        <b>
+          Password
+        </b>
+        <br />
+        <input type="password" v-model="user_password" placeholder="Password" />
+        <br />
+        <br />
+        <b v-if="displayErrorMessage" class="text-danger">{{ message }}</b>
+        <br />
+      </div>
+      <div class="card-footer">
+        <button class="btn btn-info" @click="login()">Login</button><br />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -19,12 +36,19 @@ export default {
   name: "login",
   data() {
     return {
-      user_email: "",
-      user_password: "",
+      user_email: "eve.holt@reqres.in",
+      user_password: "cityslicka",
       user_token: "",
       user_registered: false,
-      message: "Please fill the details to login"
+      message: "",
+      displayErrorMessage: false
     };
+  },
+
+  mounted() {
+    if (localStorage.getItem("user_token")) {
+      this.$router.replace({ name: "Home" });
+    }
   },
 
   methods: {
@@ -36,22 +60,40 @@ export default {
         })
         .then(response => {
           this.user_token = response.data.token;
-          localStorage.setItem("user_token", this.user_token);
+          localStorage.setItem("user_token", JSON.stringify(this.user_token));
           this.user_registered = true;
           this.$router.replace({ name: "Home" });
         })
         .catch(error => {
-          let errorMessage = "Please try again !";
-          this.message = errorMessage;
-          console.log(error);        
+          this.displayErrorMessage = true;
+          setTimeout(() => {
+            this.displayErrorMessage = false;
+          }, 2000);
+          let e = JSON.stringify(error);
+          if (e.includes("400")) {
+            this.message = "Incorrect Username or Password. Try Again !";
+          } else {
+            this.message = "No Internet Connection !";
+          }
         });
     }
   }
 };
 </script>
 <style scoped>
- .login {
-   align-self: center;
-   align-content: center;
- }
+.login {
+  width: 100%;
+  margin: 0 auto;
+}
+.card {
+  margin: 0 auto;
+  float: none;
+  margin-bottom: 10px;
+}
+.header-text {
+  font-size: 1.2em;
+}
+.card-header {
+  height: 50px;
+}
 </style>

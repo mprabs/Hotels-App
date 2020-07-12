@@ -9,9 +9,55 @@
   </head>
   <body>
     <noscript>
-      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+      <div class="noscript">
+        <h1>Hotels App won't run without Javascript enabled..</h1>
+        <strong>Please Enable Javascript !!</strong><br />
+      </div>
     </noscript>
     <div id="app"></div>
+    <footer class="footer">
+      <div class="container">
+        <span class="text-muted"> Hotels App --- Prabin Acharya @ 2020</span>
+      </div>
+    </footer>
     <!-- built files will be auto injected -->
   </body>
 </html>
+
+<style>
+
+  body {
+    background: linear-gradient(
+    to right,
+    rgb(169, 204, 233),
+    rgb(59, 48, 163),
+    rgb(48, 13, 131)
+  );
+  }
+  html,body { height: 100%;  margin: 0; }
+
+  footer {
+    height: 30px;
+    background: rgb(16, 0, 75);
+    display: table-row;
+  }
+
+  body {
+    display: table;
+    width: 100%; 
+  }
+
+  .text-muted {
+    justify-content: center;
+  }
+
+  .noscript {
+    margin: 0 auto;
+    width: 50%;
+    color: white;
+  }
+
+  .container {
+    text-align: center;
+  }
+</style>
