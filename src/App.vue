@@ -10,7 +10,6 @@
 </template>
 
 <script>
-
 export default {
   methods: {
     login() {
@@ -43,5 +42,4 @@ export default {
   padding: 30px;
   bottom: 0;
 }
-
 </style>

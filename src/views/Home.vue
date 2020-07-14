@@ -3,7 +3,7 @@
     <a class="logout-button float-right" @click="logout()">Logout</a>
     <button
       data-toggle="modal"
-      class="btn btn-outline-danger float-left"
+      class="btn btn-danger float-left"
       style="margin-left: 150px"
       data-target="#addHotel"
     >
@@ -13,23 +13,25 @@
       data-toggle="modal"
       data-target="#seeBookings"
       style="margin-left: 20px"
-      class="btn btn-outline-danger float-left"
+      class="btn btn-danger float-left"
     >
       See my bookings</button
     ><br />
-    <p v-if="isBooked">Successfully Booked !</p>
-    <p v-else-if="isCancelled">Successfully Cancelled !</p>
+    <p class="error-message" v-if="isBooked">Successfully Booked !</p>
+    <p class="error-message" v-else-if="isCancelled">
+      Successfully Cancelled !
+    </p>
     <br />
     <div class="container">
       <div class="col" v-for="column in columns" :key="column">
         <div v-for="hotel in column" :key="hotel.id" class="item-container">
           <hr />
-          <h3>{{ "Hotel " + hotel.name }}</h3>
+          <div class="card-header">
+            <h3 class="hotel-name">{{ "Hotel " + hotel.name }}</h3>
+          </div>
           <br /><br />
           <p>{{ "Address : " + hotel.address || "N/A" }} Yoo</p>
-          <br />
           <p>{{ "Number : " + hotel.number || "N/A" }}</p>
-          <br />
           <p>
             <img
               :src="hotel.img"
@@ -49,6 +51,7 @@
           </button>
           <br />
           <br />
+          <a @click="deleteHotel(hotel)" class="delete">Delete</a>
           <div v-if="isHotelBooked && hotelId === hotel.id">
             <div
               class="modal fade"
@@ -100,6 +103,8 @@ import Booking from "../components/myBookings";
 import BookingForm from "../components/bookingForm";
 import AddHotel from "../components/addHotel";
 
+const URL = "http://localhost:8080/hotels";
+
 export default {
   name: "Home",
   components: {
@@ -109,43 +114,7 @@ export default {
   },
   data() {
     return {
-      hotels: [
-        {
-          id: 1,
-          name: "Hayat",
-          address: "Japan",
-          number: "123232",
-          img: require("../images/hotel1.jpeg")
-        },
-        {
-          id: 2,
-          name: "Sangrila",
-          address: "Japan",
-          number: "123232",
-          img: require("../images/hotel2.jpeg")
-        },
-        {
-          id: 3,
-          name: "Radison",
-          address: "Japan",
-          number: "123232",
-          img: require("../images/hotel3.jpeg")
-        },
-        {
-          id: 4,
-          name: "Everest",
-          address: "Japan",
-          number: "123232",
-          img: require("../images/hotel1.jpeg")
-        },
-        {
-          id: 5,
-          name: "Newww",
-          address: "Japan",
-          number: "123232",
-          img: require("../images/hotel2.jpeg")
-        }
-      ],
+      hotels: [],
       new_hotel: "",
       new_address: "",
       new_number: "",
@@ -159,12 +128,32 @@ export default {
       bookTo: "",
       bookings: [],
       isBooked: false,
-      isCancelled: false
+      isCancelled: false,
+      errorMessage: ""
     };
   },
   methods: {
+    getHotels() {
+      this.$axios
+        .get(URL)
+        .then(response => {
+          this.hotels = response.data;
+        })
+        .catch(error => {
+          this.errorMessage = error;
+        });
+    },
     addHotel(item) {
       this.hotels.push(item);
+      this.$axios
+        .post(URL, item)
+        .then(response => {
+          console.log(response);
+          this.getHotels();
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
     bookHotel(id) {
       this.isHotelBooked = true;
@@ -178,6 +167,13 @@ export default {
         }, 3000);
       }
       this.bookings = [...newBooking, ...this.bookings];
+    },
+    deleteHotel(hotelToDelete) {
+      // alert(`Successfully deleted records of ${hotelToDelete.name}`);
+      this.hotels = this.hotels.filter(hotel => hotelToDelete._id != hotel._id);
+      console.log(hotelToDelete._id);
+      this.$axios.delete(URL + `/${hotelToDelete._id}`);
+      // window.location.reload();
     },
     logout() {
       this.$router.replace({ name: "login" });
@@ -193,12 +189,11 @@ export default {
   },
   mounted() {
     if (localStorage.getItem("user_token")) {
-      // do nothing
       console.log("User token found !");
     } else {
-      console.log("No user token");
       this.$router.replace({ name: "Login" });
     }
+    this.getHotels();
   },
   computed: {
     columns() {
@@ -236,7 +231,7 @@ export default {
 }
 
 .logout-button {
-  color: black;
+  color: rgb(250, 246, 246);
   margin-right: 150px;
   cursor: pointer;
 }
@@ -247,5 +242,16 @@ export default {
 
 .modal-body {
   text-align: left;
+}
+
+.card-header {
+  flex: 1;
+}
+
+.delete {
+  color: red;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 15px;
 }
 </style>

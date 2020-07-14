@@ -4,7 +4,7 @@
       <div class="modal-header">My bookings</div>
       <div v-if="bookings.length === 0">
         <img src="../images/not-found.png" width="400" height="400" />
-        <h4 class="error-message">No Bookings Found !</h4>
+        <h4 class="error-message">No Bookings Available !</h4>
       </div>
       <div
         v-else
