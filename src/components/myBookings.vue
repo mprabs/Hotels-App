@@ -12,18 +12,27 @@
         :key="index"
         class="modal-body"
       >
-        Hotel: {{ booking.hotel }} <br /><br />
-        Date from: {{ booking.from }} <br /><br />
-        Date to: {{ booking.to }} <br /><br />
-        Number of rooms: {{ booking.room }} <br /><br />
-        <br />
-        <button
-          class="btn btn-outline-danger"
-          data-dismiss="modal"
-          @click="$emit('cancelledItem', index)"
-        >
-          Cancel Booking
-        </button>
+        <div class="container">
+          <div class="row">
+            <div class="col-md-6">
+              Hotel: {{ booking.hotel }} <br /><br />
+              Date from: {{ booking.from }} <br /><br />
+              Date to: {{ booking.to }} <br /><br />
+              Number of rooms: {{ booking.room }} <br /><br />
+              <br />
+            </div>
+            <div class="col-md-6">
+              <button
+                class="btn btn-outline-danger"
+                data-dismiss="modal"
+                @click="$emit('cancelledItem', index)"
+              >
+                Cancel Booking
+              </button>
+            </div>
+          </div>
+        </div>
+        <hr />
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" data-dismiss="modal">Close</button>

@@ -3,12 +3,22 @@
     <a class="logout-button float-right" @click="logout()">Logout</a>
     <button
       data-toggle="modal"
-      class="btn btn-danger float-left"
-      style="margin-left: 150px"
       data-target="#addHotel"
+      style="margin-left: 150px"
+      class="btn btn-danger float-left"
     >
       Add new hotel
     </button>
+    <div
+      class="modal fade"
+      id="addHotel"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="addHotelTitle"
+      aria-hidden="true"
+    >
+      <AddHotel :success="getHotels" />
+    </div>
     <button
       data-toggle="modal"
       data-target="#seeBookings"
@@ -23,49 +33,75 @@
     </p>
     <br />
     <div class="container">
-      <div class="col" v-for="column in columns" :key="column">
-        <div v-for="hotel in column" :key="hotel.id" class="item-container">
-          <hr />
-          <div class="card-header">
-            <h3 class="hotel-name">{{ "Hotel " + hotel.name }}</h3>
-          </div>
-          <br /><br />
-          <p>{{ "Address : " + hotel.address || "N/A" }} Yoo</p>
-          <p>{{ "Number : " + hotel.number || "N/A" }}</p>
-          <p>
-            <img
-              :src="hotel.img"
-              class="rounded-lg img-fluid"
-              style="height: 200px; width: 250px;"
-            />
-          </p>
-          <button
-            @click="
-              !isHotelBooked ? bookHotel(hotel.id) : (isHotelBooked = false)
-            "
-            data-toggle="modal"
-            data-target="#bookModal"
-            class="btn btn-primary"
-          >
-            Book now
-          </button>
-          <br />
-          <br />
-          <a @click="deleteHotel(hotel)" class="delete">Delete</a>
-          <div v-if="isHotelBooked && hotelId === hotel.id">
-            <div
-              class="modal fade"
-              id="bookModal"
-              tabindex="-1"
-              role="dialog"
-              aria-labelledby="bookModalTitle"
-              aria-hidden="true"
-            >
-              <BookingForm :hotel="hotel" @new-booking="addBooking" />
+      <div class="row">
+        <div
+          v-for="hotel in hotels"
+          :key="hotel.id"
+          class="item-container col-sm"
+        >
+          <div class="card card-inverse card-info">
+            <img class="card-img-top" :src="hotel.image" />
+            <div class="card-block">
+              <figure class="profile">
+                <img :src="hotel.image" class="profile-avatar" alt="" />
+              </figure>
+              <h4 class="card-title mt-3">{{ "Hotel " + hotel.name }}</h4>
+              <div class="meta card-text">
+                <a>{{ hotel.address || "N/A" }}</a>
+              </div>
+              <div class="card-text">
+                {{ hotel.description || "Description not available." }}
+              </div>
+            </div>
+            <div class="card-footer">
+              <small
+                ><a
+                  data-toggle="modal"
+                  data-target="#updateHotel"
+                  class="action update"
+                  @click="updateHotel(hotel)"
+                  >Update</a
+                >
+                <a @click="deleteHotel(hotel)" class="action delete"
+                  >Delete</a
+                ></small
+              >
+              <div v-if="hotelToUpdate">
+                <div
+                  class="modal fade"
+                  id="updateHotel"
+                  tabindex="-1"
+                  role="dialog"
+                  aria-labelledby="updateHotelTitle"
+                  aria-hidden="true"
+                >
+                  <AddHotel :hotel="hotelToUpdate" :success="getHotels" />
+                </div>
+              </div>
+              <button
+                @click="
+                  !isHotelBooked ? bookHotel(hotel.id) : (isHotelBooked = false)
+                "
+                data-toggle="modal"
+                data-target="#bookModal"
+                class="btn btn-primary float-right btn-sm"
+              >
+                Book Now
+              </button>
+              <div v-if="isHotelBooked && hotelId === hotel.id">
+                <div
+                  class="modal fade"
+                  id="bookModal"
+                  tabindex="-1"
+                  role="dialog"
+                  aria-labelledby="bookModalTitle"
+                  aria-hidden="true"
+                >
+                  <BookingForm :hotel="hotel" @new-booking="addBooking" />
+                </div>
+              </div>
             </div>
           </div>
-
-          <hr />
         </div>
       </div>
     </div>
@@ -79,17 +115,6 @@
     >
       <Booking :bookings="bookings" @cancelledItem="cancelBooking" />
     </div>
-    <div
-      class="modal fade"
-      id="addHotel"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="addHotelTitle"
-      aria-hidden="true"
-    >
-      <AddHotel @new-hotel="addHotel" />
-    </div>
-
     <br />
     <br />
     <br />
@@ -102,11 +127,9 @@
 import Booking from "../components/myBookings";
 import BookingForm from "../components/bookingForm";
 import AddHotel from "../components/addHotel";
-
-const URL = "http://localhost:8080/hotels";
+// import { instance } from "../views/axiosheader";
 
 export default {
-  name: "Home",
   components: {
     Booking,
     BookingForm,
@@ -121,7 +144,6 @@ export default {
       isHotelBooked: false,
       hotelId: "",
       numberOfRooms: "",
-      cols: 3,
       book_user_name: "",
       book_user_number: "",
       bookFrom: "",
@@ -129,35 +151,31 @@ export default {
       bookings: [],
       isBooked: false,
       isCancelled: false,
-      errorMessage: ""
+      errorMessage: "",
+      hotelToUpdate: ""
     };
   },
   methods: {
     getHotels() {
+      const token = JSON.parse(localStorage.getItem("user_token"));
+      this.$axios.defaults.headers.common["auth_token"] = token;
       this.$axios
-        .get(URL)
+        .get("http://localhost:8081/hotels")
         .then(response => {
           this.hotels = response.data;
+          console.log(this.hotels);
         })
         .catch(error => {
           this.errorMessage = error;
         });
     },
-    addHotel(item) {
-      this.hotels.push(item);
-      this.$axios
-        .post(URL, item)
-        .then(response => {
-          console.log(response);
-          this.getHotels();
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    },
     bookHotel(id) {
       this.isHotelBooked = true;
       this.hotelId = id;
+    },
+
+    updateHotel(hotel) {
+      this.hotelToUpdate = hotel;
     },
     addBooking(newBooking) {
       this.isBooked = true;
@@ -167,12 +185,16 @@ export default {
         }, 3000);
       }
       this.bookings = [...newBooking, ...this.bookings];
+      console.log(this.bookings);
     },
     deleteHotel(hotelToDelete) {
       // alert(`Successfully deleted records of ${hotelToDelete.name}`);
-      this.hotels = this.hotels.filter(hotel => hotelToDelete._id != hotel._id);
-      console.log(hotelToDelete._id);
-      this.$axios.delete(URL + `/${hotelToDelete._id}`);
+      this.$axios.delete(URL + `/${hotelToDelete._id}`).then(response => {
+        this.hotels = this.hotels.filter(
+          hotel => hotelToDelete._id != hotel._id
+        );
+        console.log(response);
+      });
       // window.location.reload();
     },
     logout() {
@@ -191,18 +213,13 @@ export default {
     if (localStorage.getItem("user_token")) {
       console.log("User token found !");
     } else {
-      this.$router.replace({ name: "Login" });
+      this.$router.replace({ name: "login" });
     }
     this.getHotels();
   },
-  computed: {
-    columns() {
-      let columns = [];
-      let mid = Math.ceil(this.hotels.length / this.cols);
-      for (let col = 0; col < this.cols; col++) {
-        columns.push(this.hotels.slice(col * mid, col * mid + mid));
-      }
-      return columns;
+  watch: {
+    hotels: function() {
+      // this.getHotels();
     }
   }
 };
@@ -217,13 +234,6 @@ export default {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-}
-.item-container {
-  border: 1px solid;
-  padding: 5px;
-  margin: 5px;
-  background-color: rgb(230, 225, 225);
-  border-radius: 12px;
 }
 .calendarHeader {
   width: 20%;
@@ -251,7 +261,129 @@ export default {
 .delete {
   color: red;
   text-decoration: underline;
+}
+
+.update {
+  color: blue;
+}
+
+.action:hover {
+  color: rgb(102, 13, 90);
+}
+
+.action {
+  padding: 20px;
   cursor: pointer;
   font-size: 15px;
+}
+
+h5 {
+  font-size: 1.28571429em;
+  font-weight: 700;
+  line-height: 1.2857em;
+  margin: 0;
+}
+
+.card {
+  font-size: 1em;
+  overflow: hidden;
+  padding: 0;
+  border: none;
+  border-radius: 0.28571429rem;
+  box-shadow: 0 1px 3px 0 #d4d4d5, 0 0 0 1px #d4d4d5;
+}
+
+.card-block {
+  font-size: 1em;
+  position: relative;
+  margin: 0;
+  padding: 1em;
+  border: none;
+  border-top: 1px solid rgba(34, 36, 38, 0.1);
+  box-shadow: none;
+}
+
+.card-img-top {
+  display: block;
+  width: 100%;
+  height: 300px;
+}
+
+.card-title {
+  font-size: 1.28571429em;
+  font-weight: 700;
+  line-height: 1.2857em;
+}
+
+.card-text {
+  clear: both;
+  margin-top: 0.5em;
+  color: rgba(0, 0, 0, 0.68);
+}
+
+.card-footer {
+  font-size: 1em;
+  position: static;
+  top: 0;
+  left: 0;
+  max-width: 100%;
+  padding: 0.75em 1em;
+  color: rgba(0, 0, 0, 0.4);
+  border-top: 1px solid rgba(0, 0, 0, 0.05) !important;
+  background: #fff;
+}
+
+.card-inverse .btn {
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.profile {
+  position: absolute;
+  top: -12px;
+  display: inline-block;
+  overflow: hidden;
+  box-sizing: border-box;
+  width: 25px;
+  height: 25px;
+  margin: 0;
+  border: 1px solid #fff;
+  border-radius: 50%;
+}
+
+.profile-avatar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.profile-inline {
+  position: relative;
+  top: 0;
+  display: inline-block;
+}
+
+.profile-inline ~ .card-title {
+  display: inline-block;
+  margin-left: 4px;
+  vertical-align: top;
+}
+
+.text-bold {
+  font-weight: 700;
+}
+
+.meta {
+  font-size: 1em;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.meta a {
+  text-decoration: none;
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.meta a:hover {
+  color: rgba(0, 0, 0, 0.87);
 }
 </style>

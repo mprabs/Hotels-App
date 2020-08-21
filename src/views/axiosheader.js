@@ -1,3 +1,5 @@
-export const instance = this.$axios.create({
-  headers: { Authorization: localStorage.getItem('user_token') }
-})
+// import axios from 'axios';
+
+// export const instance = axios.create({
+//   headers: { auth_token: localStorage.getItem("user_token") }
+// });

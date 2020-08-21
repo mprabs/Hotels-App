@@ -1,67 +1,62 @@
 <template>
-  <form method="POST" action="">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">Booking for {{ hotel.name }}</div>
-        <div class="modal-body">
-          Name :
-          <input
-            type="text"
-            v-model="book_user_name"
-            placeholder="Enter your name"
-          />
-          <br />
-          <br />
-          Number :
-          <input
-            type="number"
-            v-model="book_user_number"
-            placeholder="Enter your number"
-          />
-          <br />
-          <br />
-          <select v-model="numberOfRooms">
-            <option disabled value>Number of rooms</option>
-            <option>1</option>
-            <option>2</option>
-            <option>3</option>
-          </select>
-          <br />From
-          <br />
-          <input type="date" v-model="bookFrom" />
-          <br />to
-          <br />
-          <input type="date" v-model="bookTo" />
-          <br />
-          <br />
-          <span v-if="numberOfRooms"
-            >Selected number of rooms: {{ numberOfRooms }}</span
-          >
-          <br />
-          <span v-if="book_user_name">Your name: {{ book_user_name }}</span>
-          <br />
-          <span v-if="book_user_number"
-            >Your number: {{ book_user_number }}</span
-          >
-          <p v-if="displayErrorMessage" class="error-message">
-            Please fill up all the fields !
-          </p>
-          <br />
-          <button
-            type="submit"
-            class="btn btn-primary"
-            @submit="verifyBooking(hotel.name)"
-            :data-dismiss="displayErrorMessage ? 0 : 'modal'"
-          >
-            Verify booking !
-          </button>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" data-dismiss="modal">Close</button>
-        </div>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">Booking Form</div>
+      <div class="modal-body">
+        Name :
+        <input
+          type="text"
+          v-model="book_user_name"
+          placeholder="Enter your name"
+        />
+        <br />
+        <br />
+        Number :
+        <input
+          type="number"
+          v-model="book_user_number"
+          placeholder="Enter your number"
+        />
+        <br />
+        <br />
+        <select v-model="numberOfRooms">
+          <option disabled value>Number of rooms</option>
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+        </select>
+        <br />From
+        <br />
+        <input type="date" v-model="bookFrom" />
+        <br />to
+        <br />
+        <input type="date" v-model="bookTo" />
+        <br />
+        <br />
+        <span v-if="numberOfRooms"
+          >Selected number of rooms: {{ numberOfRooms }}</span
+        >
+        <br />
+        <span v-if="book_user_name">Your name: {{ book_user_name }}</span>
+        <br />
+        <span v-if="book_user_number">Your number: {{ book_user_number }}</span>
+        <p v-if="displayErrorMessage" class="error-message">
+          Please fill up all the fields !
+        </p>
+        <br />
+        <button
+          class="btn btn-primary"
+          @click="verifyBooking(hotel.name)"
+          :data-dismiss="displayErrorMessage ? 0 : 'modal'"
+        >
+          Verify booking !
+        </button>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>
-  </form>
+  </div>
 </template>
 
 <script>
@@ -107,6 +102,11 @@ export default {
         room: this.numberOfRooms
       });
       this.$emit("new-booking", this.bookings);
+    }
+  },
+  watch: {
+    hotel: function() {
+      console.log(this.hotel);
     }
   }
 };

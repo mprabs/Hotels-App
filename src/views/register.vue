@@ -3,10 +3,16 @@
     <div class="card" style="width: 18rem;">
       <div class="card-header">
         <p class="header-text">
-          Please fill the details to login
+          Create an account
         </p>
       </div>
       <div class="card-body">
+        <b>
+          Name
+        </b>
+        <br />
+        <input v-model="user_name" type="name" placeholder="Name" /><br />
+        <br />
         <b>
           Email
         </b>
@@ -24,9 +30,9 @@
         <br />
       </div>
       <div class="card-footer">
-        <button class="btn btn-info" @click="login()">Login</button><br />
+        <button class="btn btn-info" @click="register()">Register</button><br />
+        <a @click="goToLogin()">Login</a><br />
       </div>
-      <a style="cursor: pointer;" @click="showRegister()">Register</a>
     </div>
   </div>
 </template>
@@ -34,9 +40,10 @@
 <script>
 // import instance from "./axiosheader.js";
 export default {
-  name: "login",
+  name: "register",
   data() {
     return {
+      user_name: "",
       user_email: "",
       user_password: "",
       user_token: "",
@@ -45,42 +52,40 @@ export default {
       displayErrorMessage: false
     };
   },
+
   mounted() {
-    if (localStorage.getItem("user_token")) {
-      this.$router.replace({ name: "Home" });
-    }
-    console.log(process.env.VUE_APP_URL);
+    // if (localStorage.getItem("user_token")) {
+    //   this.$router.replace({ name: "Home" });
+    // }
   },
 
   methods: {
-    showRegister() {
-      this.$router.replace({ name: "register" });
-    },
-    login() {
+    register() {
       this.$axios
-        .post("http://localhost:8081/users/login", {
+        .post("http://localhost:8081/users/register", {
+          name: this.user_name,
           email: this.user_email,
           password: this.user_password
         })
         .then(response => {
-          this.user_token = response.data.token;
-          localStorage.setItem(
-            "user_token",
-            JSON.stringify({
-              token: this.user_token
-            })
-          );
-          this.$axios.defaults.headers.common["auth_token"] = this.user_token;
-          this.user_registered = true;
-          this.$router.replace({ name: "Home" });
+          console.log(response);
+          this.goToLogin();
         })
         .catch(error => {
           this.displayErrorMessage = true;
           setTimeout(() => {
             this.displayErrorMessage = false;
           }, 2000);
-          this.message = error.message;
+          let e = JSON.stringify(error);
+          if (e.includes("400")) {
+            this.message = "Incorrect Username or Password. Try Again !";
+          } else {
+            this.message = "No Internet Connection !";
+          }
         });
+    },
+    goToLogin() {
+      this.$router.replace({ name: "login" });
     }
   }
 };
