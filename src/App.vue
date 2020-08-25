@@ -1,10 +1,5 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <h3 class="app-header" role="alert">
-        Hotel App
-      </h3>
-    </div>
     <router-view /><br />
   </div>
 </template>

@@ -25,8 +25,10 @@
       </div>
       <div class="card-footer">
         <button class="btn btn-info" @click="login()">Login</button><br />
+        <div class="register">
+          New here?<a style="cursor: pointer;" @click="showRegister()">Register</a>
+        </div>
       </div>
-      <a style="cursor: pointer;" @click="showRegister()">Register</a>
     </div>
   </div>
 </template>
@@ -49,7 +51,6 @@ export default {
     if (localStorage.getItem("user_token")) {
       this.$router.replace({ name: "Home" });
     }
-    console.log(process.env.VUE_APP_URL);
   },
 
   methods: {
@@ -70,6 +71,7 @@ export default {
               token: this.user_token
             })
           );
+          localStorage.setItem("user_data", JSON.stringify(response.data));
           this.$axios.defaults.headers.common["auth_token"] = this.user_token;
           this.user_registered = true;
           this.$router.replace({ name: "Home" });
@@ -101,4 +103,10 @@ export default {
 .card-header {
   height: 50px;
 }
+
+.card-footer .register a{
+  margin: 5px;
+}
+
+
 </style>

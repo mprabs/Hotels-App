@@ -1,4 +1,10 @@
 <template>
+<div class="body">
+  <div id="nav">
+      <h3 class="app-header" role="alert">
+          Hotel App
+      </h3>
+  </div>
   <div class="login">
     <div class="card" style="width: 18rem;">
       <div class="card-header">
@@ -31,10 +37,12 @@
       </div>
       <div class="card-footer">
         <button class="btn btn-info" @click="register()">Register</button><br />
-        <a @click="goToLogin()">Login</a><br />
+        Already have an account ? <a style="cursor: pointer" @click="goToLogin()">Login</a><br />
       </div>
     </div>
   </div>
+</div>
+
 </template>
 
 <script>

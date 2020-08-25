@@ -1,42 +1,45 @@
 <template>
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
-      <div class="modal-header">Add a new hotel</div>
-      <div class="modal-body">
-        {{ hotel.name }}
-        <input v-model="new_hotel_name" placeholder="Hotel Name" />
-        <br />
-        <input v-model="new_hotel_address" placeholder="Address" />
-        <br />
-        <input v-model="new_hotel_number" placeholder="Number" />
-        <br />
-        <!-- <file-pond
-          name="test"
-          ref="pond"
-          class-name="my-pond"
-          label-idle="Drop hotel image here..."
-          allow-multiple="false"
-          accepted-file-types="image/jpeg, image/png, image/jpg"
-          v-bind:files="myFiles"
-          v-on:init="onFileChange"
-        /> -->
-
-        <input type="file" accept="image/*" @change="onFileChange" />
-        <div v-if="image">
-          <img :src="image" height="100" width="100" />
+      <div class="modal-header">
+        <div class="modal-title w-100 text-center">
+           {{ hotel ? `Update details for ${hotel.name} ` : "Add a hotel" }}
         </div>
+      </div>
+      <div class="modal-body">
+        <!-- {{ hotel.name }} -->
+        <div class="input-group">
+          <label for="hotelName">Hotel Name</label>
+          <input id="hotelName" v-model="new_hotel_name" placeholder="Hotel Name" />
+          <br />
+          <label for="hotelAddress">Hotel Address</label>
+          <input id="hotelAddress" v-model="new_hotel_address" placeholder="Address" />
+          <br />
+          <label for="hotelNumber">Hotel Number</label>
+          <input id="hotelNumber" v-model="new_hotel_number" placeholder="Number" />
+          <br />
+          <div class="image">
+            <label class="custom-file-upload">
+              <input type="file" accept="image/*" @change="onFileChange" />
+              Upload A Picture
+            </label>
+            <div v-if="image">
+              <img :src="image" height="100" width="100" />
+            </div>  
+          </div>
 
-        <p class="error-message" v-if="isDataEmpty">
-          {{ errorMessage }}
-        </p>
+          <p class="error-message" v-if="isDataEmpty">
+            {{ errorMessage }}
+          </p>
 
-        <button
-          class="btn btn-primary"
-          :data-dismiss="isDataEmpty == false ? 'modal' : 0"
-          @click="addHotel()"
-        >
-          {{ hotel ? "Update" : "Add" }}
-        </button>
+        </div>
+          <button
+            class="btn btn-primary add-btn"
+            :data-dismiss="isDataEmpty == false ? 'modal' : 0"
+            @click="addHotel()"
+          >
+            {{ hotel ? "Update" : "Add" }}
+          </button>
       </div>
       <div class="modal-footer">
         <button
@@ -74,13 +77,13 @@ export default {
       file: "",
       image: "",
       myFiles: [],
-      errorMessage: "Please add a hotel name and an address."
+      errorMessage: "Please add all fields."
     };
   },
   props: ["hotel"],
   methods: {
     addHotel() {
-      if (this.new_hotel_name == "" || this.new_hotel_address == "") {
+      if (!this.new_hotel_name || !this.new_hotel_address ||!this.new_hotel_number || !this.image ) {
         this.isDataEmpty = true;
         return;
       }
@@ -142,9 +145,9 @@ export default {
         (this.image = this.hotel.image);
     }
   },
-  mounted() {
+  async mounted() {
     if (this.hotel) {
-      this.updateField();
+     await this.updateField();
     } else {
       this.hotel = "";
     }
@@ -160,5 +163,58 @@ export default {
 <style>
 .error-message {
   color: rgb(255, 0, 0);
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.input-group input {
+  padding: 10px;
+  border: 2px solid rgb(194, 194, 196);
+  border-radius: 30px;
+  text-align: center;
+}
+
+.custom-file-upload {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    display: flex;
+    margin: 0 auto;
+    justify-content: center;
+    align-items: center;
+}
+
+input:focus{
+    outline: none;
+    border: 2px solid blueviolet;
+    background-color: rgb(152, 226, 255);
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.image {
+  display: flex;
+  justify-content: space-between;
+}
+
+.add-btn {
+  width: 100%;
+  margin-top: 30px;
+}
+
+.image img {
+  margin: 0 auto;
+}
+
+.image label {
+  flex: 0.7;
 }
 </style>

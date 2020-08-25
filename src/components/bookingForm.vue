@@ -1,7 +1,7 @@
 <template>
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
-      <div class="modal-header">Booking Form</div>
+      <div class="modal-header">Booking Form for {{ hotel.name }}</div>
       <div class="modal-body">
         Name :
         <input
@@ -46,7 +46,7 @@
         <br />
         <button
           class="btn btn-primary"
-          @click="verifyBooking(hotel.name)"
+          @click="verifyBooking()"
           :data-dismiss="displayErrorMessage ? 0 : 'modal'"
         >
           Verify booking !
@@ -65,7 +65,7 @@ export default {
     return {
       bookings: [],
       book_user_number: "",
-      book_user_name: "",
+      book_user_name: this.user.name,
       bookTo: "",
       bookFrom: "",
       numberOfRooms: "",
@@ -76,10 +76,14 @@ export default {
     hotel: {
       type: Object,
       required: true
+    },
+    user: {
+      type: Object,
+      required: true
     }
   },
   methods: {
-    verifyBooking(hotelName) {
+    verifyBooking() {
       if (
         !this.book_user_name ||
         !this.book_user_number ||
@@ -93,14 +97,16 @@ export default {
         }, 2000);
         return;
       }
-      this.bookings.push({
-        hotel: hotelName,
-        user: this.book_user_name,
-        number: this.book_user_number,
-        from: this.bookFrom,
-        to: this.bookTo,
-        room: this.numberOfRooms
-      });
+      const newBooking = {
+        hotel: this.hotel._id,
+        user: this.user.id,
+        contact: this.book_user_number,
+        bookFrom: this.bookFrom,
+        bookTo: this.bookTo,
+        numberOfRooms: this.numberOfRooms
+      }
+      this.$axios.post('http://localhost:8081/bookings', newBooking);
+      this.bookings.push(newBooking);
       this.$emit("new-booking", this.bookings);
     }
   },

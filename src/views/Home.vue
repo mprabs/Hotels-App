@@ -1,14 +1,20 @@
 <template>
   <div class="home">
-    <a class="logout-button float-right" @click="logout()">Logout</a>
-    <button
-      data-toggle="modal"
-      data-target="#addHotel"
-      style="margin-left: 150px"
-      class="btn btn-danger float-left"
-    >
-      Add new hotel
-    </button>
+    <Navbar />
+    <p>
+      {{ user.name }}
+    </p>
+    <div class="menu-bar">
+      <div class="buttons">
+        <button data-toggle="modal" data-target="#addHotel" class="btn btn-danger">
+          Add new hotel
+        </button>
+        <button data-toggle="modal" data-target="#seeBookings" class="btn btn-danger">
+          See my bookings
+          <span class="badge badge-light">{{ myBookings.length }}</span>
+        </button>
+      </div>
+    </div>
     <div
       class="modal fade"
       id="addHotel"
@@ -19,14 +25,6 @@
     >
       <AddHotel :success="getHotels" />
     </div>
-    <button
-      data-toggle="modal"
-      data-target="#seeBookings"
-      style="margin-left: 20px"
-      class="btn btn-danger float-left"
-    >
-      See my bookings</button
-    ><br />
     <p class="error-message" v-if="isBooked">Successfully Booked !</p>
     <p class="error-message" v-else-if="isCancelled">
       Successfully Cancelled !
@@ -36,7 +34,7 @@
       <div class="row">
         <div
           v-for="hotel in hotels"
-          :key="hotel.id"
+          :key="hotel._id"
           class="item-container col-sm"
         >
           <div class="card card-inverse card-info">
@@ -54,18 +52,27 @@
               </div>
             </div>
             <div class="card-footer">
-              <small
-                ><a
+              <small>
+                <a
                   data-toggle="modal"
                   data-target="#updateHotel"
                   class="action update"
                   @click="updateHotel(hotel)"
-                  >Update</a
-                >
-                <a @click="deleteHotel(hotel)" class="action delete"
-                  >Delete</a
-                ></small
+                  >Update
+                  </a>
+                <a @click="deleteHotel(hotel)" class="action delete">Delete</a>
+              </small>
+            </div>
+              <button
+                @click="
+                  !isHotelBooked ? bookHotel(hotel._id) : (isHotelBooked = false)
+                "
+                data-toggle="modal"
+                data-target="#bookModal"
+                class="btn btn-primary book-btn float-right btn-sm"
               >
+                Book Now
+              </button>
               <div v-if="hotelToUpdate">
                 <div
                   class="modal fade"
@@ -78,17 +85,7 @@
                   <AddHotel :hotel="hotelToUpdate" :success="getHotels" />
                 </div>
               </div>
-              <button
-                @click="
-                  !isHotelBooked ? bookHotel(hotel.id) : (isHotelBooked = false)
-                "
-                data-toggle="modal"
-                data-target="#bookModal"
-                class="btn btn-primary float-right btn-sm"
-              >
-                Book Now
-              </button>
-              <div v-if="isHotelBooked && hotelId === hotel.id">
+              <div v-if="isHotelBooked && hotelId === hotel._id">
                 <div
                   class="modal fade"
                   id="bookModal"
@@ -97,10 +94,9 @@
                   aria-labelledby="bookModalTitle"
                   aria-hidden="true"
                 >
-                  <BookingForm :hotel="hotel" @new-booking="addBooking" />
+                  <BookingForm :user="user" :hotel="hotel" @new-booking="addBooking" />
                 </div>
               </div>
-            </div>
           </div>
         </div>
       </div>
@@ -113,7 +109,7 @@
       aria-labelledby="seeBookingsTitle"
       aria-hidden="true"
     >
-      <Booking :bookings="bookings" @cancelledItem="cancelBooking" />
+      <Booking :bookings="myBookings" @cancelledItem="cancelBooking" />
     </div>
     <br />
     <br />
@@ -123,17 +119,17 @@
 
 <script>
 // @ is an alias to /src
-
+import Navbar from "../components/navigation";
 import Booking from "../components/myBookings";
 import BookingForm from "../components/bookingForm";
 import AddHotel from "../components/addHotel";
-// import { instance } from "../views/axiosheader";
 
 export default {
   components: {
     Booking,
     BookingForm,
-    AddHotel
+    AddHotel,
+    Navbar
   },
   data() {
     return {
@@ -152,7 +148,11 @@ export default {
       isBooked: false,
       isCancelled: false,
       errorMessage: "",
-      hotelToUpdate: ""
+      hotelToUpdate: "",
+      user_name: "",
+      user: "",
+      bookingList: [],
+      myBookings: []
     };
   },
   methods: {
@@ -163,7 +163,7 @@ export default {
         .get("http://localhost:8081/hotels")
         .then(response => {
           this.hotels = response.data;
-          console.log(this.hotels);
+          this.getBookingsData();
         })
         .catch(error => {
           this.errorMessage = error;
@@ -173,7 +173,6 @@ export default {
       this.isHotelBooked = true;
       this.hotelId = id;
     },
-
     updateHotel(hotel) {
       this.hotelToUpdate = hotel;
     },
@@ -185,28 +184,33 @@ export default {
         }, 3000);
       }
       this.bookings = [...newBooking, ...this.bookings];
-      console.log(this.bookings);
+      this.getHotels();
     },
     deleteHotel(hotelToDelete) {
-      // alert(`Successfully deleted records of ${hotelToDelete.name}`);
-      this.$axios.delete(URL + `/${hotelToDelete._id}`).then(response => {
+      this.$axios.delete(`http://localhost:8081/hotels/${hotelToDelete._id}`).then(() => {
         this.hotels = this.hotels.filter(
           hotel => hotelToDelete._id != hotel._id
         );
-        console.log(response);
       });
-      // window.location.reload();
     },
-    logout() {
-      this.$router.replace({ name: "login" });
-      localStorage.removeItem("user_token");
-    },
-    async cancelBooking(id) {
-      this.bookings.splice(id, 1);
+    async cancelBooking(...args) {
+      const [index, id] = args;
+      this.$axios.delete(`http://localhost:8081/bookings/${id}`)
+      this.bookings.splice(index, 1);
       this.isCancelled = true;
+      this.getHotels();
       await setTimeout(() => {
         this.isCancelled = false;
       }, 3000);
+    },
+    async getBookingsData() {
+      await this.$axios.get('http://localhost:8081/bookings')
+      .then(async(response) => {
+        this.bookingsList = await response.data
+        const user = await JSON.parse(localStorage.getItem("user_data"));
+        this.myBookings = await this.bookingsList.filter(item => item.user[0]._id === user.id)
+        console.log('mybooks', this.myBookings)
+      })
     }
   },
   mounted() {
@@ -215,6 +219,7 @@ export default {
     } else {
       this.$router.replace({ name: "login" });
     }
+    this.user = JSON.parse(localStorage.getItem("user_data"));
     this.getHotels();
   },
   watch: {
@@ -226,6 +231,57 @@ export default {
 </script>
 
 <style scoped>
+
+.home {
+  margin-top: 20vh;
+}
+.home p {
+  color: white;
+  font-size: 20px;
+}
+
+.menu-bar {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 40px;
+}
+
+.book-btn {
+  padding: 15px;
+  border-radius: 30px;
+  margin: 10px;
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  width: 95%;
+}
+
+.buttons button {
+  margin: 10px;
+}
+
+@media screen and (max-width: 780px) {
+ .buttons {
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+ } 
+
+ .buttons button {
+    margin: 10px
+ }
+
+ .card {
+   margin: 20px;
+ }
+
+ .row {
+   flex-direction: column;
+ }
+}
+
 .container {
   display: flex;
 }
@@ -240,16 +296,6 @@ export default {
   color: #25255c;
 }
 
-.logout-button {
-  color: rgb(250, 246, 246);
-  margin-right: 150px;
-  cursor: pointer;
-}
-
-.logout-button:hover {
-  color: rgb(205, 81, 50);
-}
-
 .modal-body {
   text-align: left;
 }
@@ -260,7 +306,6 @@ export default {
 
 .delete {
   color: red;
-  text-decoration: underline;
 }
 
 .update {

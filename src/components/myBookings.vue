@@ -1,5 +1,5 @@
 <template>
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">My bookings</div>
       <div v-if="bookings.length === 0">
@@ -15,17 +15,17 @@
         <div class="container">
           <div class="row">
             <div class="col-md-6">
-              Hotel: {{ booking.hotel }} <br /><br />
-              Date from: {{ booking.from }} <br /><br />
-              Date to: {{ booking.to }} <br /><br />
-              Number of rooms: {{ booking.room }} <br /><br />
+              Hotel: {{ booking.hotel[0].name }} <br /><br />
+              Date from: {{ booking.bookFrom }} <br /><br />
+              Date to: {{ booking.bookTo }} <br /><br />
+              Number of rooms: {{ booking.numberOfRooms }} <br /><br />
               <br />
             </div>
             <div class="col-md-6">
               <button
                 class="btn btn-outline-danger"
                 data-dismiss="modal"
-                @click="$emit('cancelledItem', index)"
+                @click="$emit('cancelledItem', index, booking._id)"
               >
                 Cancel Booking
               </button>
