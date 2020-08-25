@@ -193,7 +193,7 @@ export default {
 input:focus{
     outline: none;
     border: 2px solid blueviolet;
-    background-color: rgb(152, 226, 255);
+    background-color: rgb(238, 244, 246);
 }
 
 input[type="file"] {
