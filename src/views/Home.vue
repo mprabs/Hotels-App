@@ -2,7 +2,7 @@
   <div class="home">
     <Navbar />
     <p>
-      {{ user.name }}
+      {{ `Good ${timeOfTheDay}, ${user.name} !` }}
     </p>
     <div class="menu-bar">
       <div class="buttons">
@@ -25,10 +25,12 @@
     >
       <AddHotel :success="getHotels" />
     </div>
-    <p class="error-message" v-if="isBooked">Successfully Booked !</p>
-    <p class="error-message" v-else-if="isCancelled">
-      Successfully Cancelled !
-    </p>
+    <div class="toasts">
+      <p class="error-message" :style="[snackBar]" v-if="isBooked">Successfully Booked !</p>
+      <p class="error-message" :style="[snackBar]" v-else-if="isCancelled" >
+        Successfully Cancelled !
+      </p>
+    </div>
     <br />
     <div class="container">
       <div class="row">
@@ -168,10 +170,28 @@ export default {
       prev: "",
       next: "",
       page: 1,
-      limit: 10
+      limit: 10,
+      timeOfTheDay: "",
+      snackBar: {
+        padding: '15px',
+        margin: '0 auto',
+        color: 'white',
+        backgroundColor: 'green',
+      }
     };
   },
   methods: {
+    calculateCurrentTime() {
+      var date = new Date();
+      var h = date.getHours();
+      if(h<12 && h>= 5) {
+        this.timeOfTheDay = "Morning"
+      } else if(h>=12 && h<=17) {
+        this.timeOfTheDay = "Afternoon"
+      } else if(h>=17 && h<=24 || h>=1 && h<=4) {
+        this.timeOfTheDay = "Night"
+      }
+    },
     onAddHotel(data) {
       console.log('Hotel Added', data)
       this.getHotels();
@@ -242,6 +262,7 @@ export default {
     }
     this.user = JSON.parse(localStorage.getItem("user_data"));
     this.getHotels();
+    this.calculateCurrentTime();
   },
   watch: {
     hotels: function() {
@@ -303,6 +324,10 @@ export default {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 30px;
+}
+
+figure img {
+  object-fit: cover;
 }
 
 .buttons {
@@ -484,5 +509,12 @@ h5 {
 
 .meta a:hover {
   color: rgba(0, 0, 0, 0.87);
+}
+
+.toasts {
+  position: fixed;
+  top: 10vh;
+  width: 100%;
+  z-index: 9999;
 }
 </style>
