@@ -82,7 +82,7 @@
                   aria-labelledby="updateHotelTitle"
                   aria-hidden="true"
                 >
-                  <AddHotel :hotel="hotelToUpdate" @success="getHotels" />
+                  <AddHotel :hotel="hotelToUpdate" @success="onAddHotel" />
                 </div>
               </div>
               <div v-if="isHotelBooked && hotelId === hotel._id">
@@ -157,7 +157,6 @@ export default {
       book_user_number: "",
       bookFrom: "",
       bookTo: "",
-      bookings: [],
       isBooked: false,
       isCancelled: false,
       errorMessage: "",
@@ -173,6 +172,10 @@ export default {
     };
   },
   methods: {
+    onAddHotel(data) {
+      console.log('Hotel Added', data)
+      this.getHotels();
+    },
     goToPrev() {
       this.page = this.prev.page;
       this.getHotels();
@@ -182,6 +185,7 @@ export default {
       this.getHotels();
     },
     getHotels() {
+      console.log('Get hotels')
       this.$axios
         .get(`${URL}/hotels?page=${this.page}&limit=${this.limit}`)
         .then(response => {
@@ -201,27 +205,20 @@ export default {
     updateHotel(hotel) {
       this.hotelToUpdate = hotel;
     },
-    addBooking(newBooking) {
+    addBooking() {
       this.isBooked = true;
       if (this.isBooked) {
         setTimeout(() => {
           this.isBooked = false;
         }, 3000);
       }
-      this.bookings = [...newBooking, ...this.bookings];
       this.getHotels();
     },
     deleteHotel(hotelToDelete) {
-      this.$axios.delete(`${URL}/hotels/${hotelToDelete._id}`).then(() => {
-        this.hotels = this.hotels.filter(
-          hotel => hotelToDelete._id != hotel._id
-        );
-      });
+      this.$axios.delete(`${URL}/hotels/${hotelToDelete._id}`).then(this.getHotels())
     },
-    async cancelBooking(...args) {
-      const [index, id] = args;
+    async cancelBooking(id) {
       this.$axios.delete(`${URL}/bookings/${id}`)
-      this.bookings.splice(index, 1);
       this.isCancelled = true;
       this.getHotels();
       await setTimeout(() => {
@@ -229,17 +226,15 @@ export default {
       }, 3000);
     },
     async getBookingsData() {
-      await this.$axios.get(`${URL}/bookings`)
-      .then(async(response) => {
-        this.bookingsList = await response.data
-        const user = await JSON.parse(localStorage.getItem("user_data"));
-        this.myBookings = await this.bookingsList.filter(item => item.user[0]._id === user.id)
-        console.log('mybooks', this.myBookings)
+      const user = JSON.parse(localStorage.getItem("user_data"))
+      this.$axios.get('http://localhost:8081/bookings').then(response =>{
+        this.bookingList = response.data;
+        this.myBookings = this.bookingList.filter(item => item.user[0]._id == user.id)
       })
     }
   },
   mounted() {
-    const token = JSON.parse(localStorage.getItem("user_token"));
+    const token = JSON.parse(localStorage.getItem("user_data"));
     if (token) {
       this.$axios.defaults.headers.common["auth_token"] = token;
     } else {

@@ -96,11 +96,6 @@ export default {
       if (this.hotel) {
         this.$axios
           .patch(URL + `/${this.hotel._id}`, this.new_hotel)
-          .then(response => {
-            console.log(response);
-            this.isDataEmpty = false;
-            this.$emit("success");
-          })
           .catch(error => {
             this.isDataEmpty = true;
             this.errorMessage = error.message;
@@ -108,11 +103,6 @@ export default {
       } else {
         this.$axios
           .post(URL, this.new_hotel)
-          .then(response => {
-            console.log(response);
-            this.isDataEmpty = false;
-            this.$emit("success");
-          })
           .catch(error => {
             this.isDataEmpty = true;
             this.errorMessage = error.message;
@@ -120,12 +110,10 @@ export default {
       }
     },
     clear() {
-      this.new_hotel_name = this.new_hotel_address = this.new_hotel_number = this.image =
-        "";
+      this.new_hotel_name = this.new_hotel_address = this.new_hotel_number = this.image ="";
     },
     onFileChange(e) {
       var files = e.target.files || e.dataTransfer.files;
-      console.log(files)
       if (!files.length) return;
       this.createImage(files[0]);
     },
@@ -140,9 +128,9 @@ export default {
     },
     updateField() {
       (this.new_hotel_name = this.hotel.name),
-        (this.new_hotel_address = this.hotel.address),
-        (this.new_hotel_number = this.hotel.number),
-        (this.image = this.hotel.image);
+      (this.new_hotel_address = this.hotel.address),
+      (this.new_hotel_number = this.hotel.number),
+      (this.image = this.hotel.image);
     }
   },
   async mounted() {
