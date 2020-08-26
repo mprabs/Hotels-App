@@ -12,7 +12,7 @@
         :key="index"
         class="modal-body"
       >
-        <div class="container">
+        <div class="container bookings-container">
           <div class="row">
             <div class="col-md-6">
               Hotel: {{ booking.hotel[0].name }} <br /><br />
@@ -22,8 +22,11 @@
               <br />
             </div>
             <div class="col-md-6">
+              <img :src="booking.hotel[0].image" alt=""><br />
+            </div>
+            <div class="col-md-12">
               <button
-                class="btn btn-outline-danger"
+                class="btn btn-danger cancel-button"
                 data-dismiss="modal"
                 @click="$emit('cancelledItem', booking._id)"
               >
@@ -32,7 +35,6 @@
             </div>
           </div>
         </div>
-        <hr />
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -61,5 +63,23 @@ export default {
   font-size: 1.5em;
   background-color: royalblue;
   color: white;
+}
+
+img {
+  height: 150px;
+  width: 200px;
+  object-fit: contain;
+}
+
+.cancel-button {
+  width: 80%;
+}
+
+.bookings-container {
+  color: white;
+  margin: 20px;
+  padding: 20px;
+  background-color: rgb(47, 47, 71);
+  border-radius: 30px;
 }
 </style>

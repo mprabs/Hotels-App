@@ -124,10 +124,6 @@ export default {
   color: red;
 }
 
-.modal-body {
-  background-color: rgb(235, 235, 235);
-}
-
 .input-group select {
   margin: 20px;
   padding: 10px;

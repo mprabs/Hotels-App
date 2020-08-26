@@ -102,14 +102,14 @@
       </div>
     </div>
     <div class="paginations">
-      <div v-if="this.prev" class="prev">
-        <a @click="goToPrev()">Previous</a>
+      <div class="prev">
+        <a @click="goToPrev()" :style="this.prev ? 'color: white' : 'color: rgb(94, 68, 163)'">Previous</a>
       </div>
-      <ul class="page-numbers">
-        <li>{{this.page}}</li>
-      </ul>
-      <div v-if="this.next" class="next">
-        <a @click="goToNext()">Next</a>
+      <div class="page-number">
+        <b>{{this.page}}</b>
+      </div>
+      <div class="next">
+        <a @click="goToNext()" :style="this.next ? 'color: white' : 'color: rgb(94, 68, 163)'">Next</a>
       </div>
     </div>
     <div
@@ -262,7 +262,9 @@ export default {
 }
 
 .paginations {
+  margin-top: 40px;
   display: flex;
+  padding: 10px;
   justify-content: center;
   align-items: center;
 }
@@ -272,19 +274,17 @@ export default {
   cursor: pointer;
 }
 
-.paginations .page-numbers {
-  display: flex;
+.paginations .page-number {
   color: #fff;
   width: 200px;
   list-style: none;
-  justify-content: center;
+ justify-content: center;
 }
 
-.paginations .page-numbers li {
-  background: rgb(19, 18, 18);
-  padding: 10px 20px;
+.paginations .page-number b {
+  background-color: rgb(113, 112, 116);
   margin-right: 20px;
-  cursor: pointer;
+  padding: 10px 20px;
 }
 
 .menu-bar {
