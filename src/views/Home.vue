@@ -26,10 +26,12 @@
       <AddHotel :success="getHotels" />
     </div>
     <div class="toasts">
-      <p class="error-message" :style="[snackBar]" v-if="isBooked">Successfully Booked !</p>
-      <p class="error-message" :style="[snackBar]" v-else-if="isCancelled" >
-        Successfully Cancelled !
-      </p>
+      <transition name="slide-fade">
+        <p class="error-message" :style="[snackBar]" v-if="isBooked">Successfully Booked !</p>
+        <p class="error-message" :style="[snackBar]" v-else-if="isCancelled" >
+          Successfully Cancelled !
+        </p>
+      </transition>
     </div>
     <br />
     <div class="container">
@@ -513,8 +515,22 @@ h5 {
 
 .toasts {
   position: fixed;
+  margin: 10px;
   top: 10vh;
-  width: 100%;
+  right: 0;
+  width: 30%;
   z-index: 9999;
+}
+
+.slide-fade-enter-active {
+  transition: all .7s ease;
+}
+.slide-fade-leave-active {
+  transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+.slide-fade-enter, .slide-fade-leave-to
+/* .slide-fade-leave-active below version 2.1.8 */ {
+  transform: translateX(10px);
+  opacity: 0;
 }
 </style>
