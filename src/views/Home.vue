@@ -82,7 +82,7 @@
                   aria-labelledby="updateHotelTitle"
                   aria-hidden="true"
                 >
-                  <AddHotel :hotel="hotelToUpdate" :success="getHotels" />
+                  <AddHotel :hotel="hotelToUpdate" @success="getHotels" />
                 </div>
               </div>
               <div v-if="isHotelBooked && hotelId === hotel._id">
@@ -99,6 +99,17 @@
               </div>
           </div>
         </div>
+      </div>
+    </div>
+    <div class="paginations">
+      <div v-if="this.prev" class="prev">
+        <a @click="goToPrev()">Previous</a>
+      </div>
+      <ul class="page-numbers">
+        <li>{{this.page}}</li>
+      </ul>
+      <div v-if="this.next" class="next">
+        <a @click="goToNext()">Next</a>
       </div>
     </div>
     <div
@@ -123,6 +134,8 @@ import Navbar from "../components/navigation";
 import Booking from "../components/myBookings";
 import BookingForm from "../components/bookingForm";
 import AddHotel from "../components/addHotel";
+
+const URL = "http://localhost:8081"
 
 export default {
   components: {
@@ -152,17 +165,29 @@ export default {
       user_name: "",
       user: "",
       bookingList: [],
-      myBookings: []
+      myBookings: [],
+      prev: "",
+      next: "",
+      page: 1,
+      limit: 10
     };
   },
   methods: {
+    goToPrev() {
+      this.page = this.prev.page;
+      this.getHotels();
+    },
+    goToNext() {
+      this.page = this.next.page;
+      this.getHotels();
+    },
     getHotels() {
-      const token = JSON.parse(localStorage.getItem("user_token"));
-      this.$axios.defaults.headers.common["auth_token"] = token;
       this.$axios
-        .get("http://localhost:8081/hotels")
+        .get(`${URL}/hotels?page=${this.page}&limit=${this.limit}`)
         .then(response => {
-          this.hotels = response.data;
+          this.hotels = response.data.results;
+          this.prev = response.data.prev;
+          this.next = response.data.next;
           this.getBookingsData();
         })
         .catch(error => {
@@ -187,7 +212,7 @@ export default {
       this.getHotels();
     },
     deleteHotel(hotelToDelete) {
-      this.$axios.delete(`http://localhost:8081/hotels/${hotelToDelete._id}`).then(() => {
+      this.$axios.delete(`${URL}/hotels/${hotelToDelete._id}`).then(() => {
         this.hotels = this.hotels.filter(
           hotel => hotelToDelete._id != hotel._id
         );
@@ -195,7 +220,7 @@ export default {
     },
     async cancelBooking(...args) {
       const [index, id] = args;
-      this.$axios.delete(`http://localhost:8081/bookings/${id}`)
+      this.$axios.delete(`${URL}/bookings/${id}`)
       this.bookings.splice(index, 1);
       this.isCancelled = true;
       this.getHotels();
@@ -204,7 +229,7 @@ export default {
       }, 3000);
     },
     async getBookingsData() {
-      await this.$axios.get('http://localhost:8081/bookings')
+      await this.$axios.get(`${URL}/bookings`)
       .then(async(response) => {
         this.bookingsList = await response.data
         const user = await JSON.parse(localStorage.getItem("user_data"));
@@ -214,8 +239,9 @@ export default {
     }
   },
   mounted() {
-    if (localStorage.getItem("user_token")) {
-      console.log("User token found !");
+    const token = JSON.parse(localStorage.getItem("user_token"));
+    if (token) {
+      this.$axios.defaults.headers.common["auth_token"] = token;
     } else {
       this.$router.replace({ name: "login" });
     }
@@ -240,6 +266,32 @@ export default {
   font-size: 20px;
 }
 
+.paginations {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.paginations .prev a, .paginations .next a {
+  color: #fff;
+  cursor: pointer;
+}
+
+.paginations .page-numbers {
+  display: flex;
+  color: #fff;
+  width: 200px;
+  list-style: none;
+  justify-content: center;
+}
+
+.paginations .page-numbers li {
+  background: rgb(19, 18, 18);
+  padding: 10px 20px;
+  margin-right: 20px;
+  cursor: pointer;
+}
+
 .menu-bar {
   display: flex;
   justify-content: space-between;
@@ -250,6 +302,12 @@ export default {
   padding: 15px;
   border-radius: 30px;
   margin: 10px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
 }
 
 .buttons {
@@ -278,7 +336,7 @@ export default {
  }
 
  .row {
-   flex-direction: column;
+   grid-template-columns: 1fr;
  }
 }
 
@@ -350,6 +408,7 @@ h5 {
 
 .card-img-top {
   display: block;
+  object-fit: cover;
   width: 100%;
   height: 300px;
 }
