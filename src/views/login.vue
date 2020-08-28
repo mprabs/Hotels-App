@@ -71,7 +71,8 @@ export default {
               token: this.user_token
             })
           );
-          localStorage.setItem("user_data", JSON.stringify(response.data));
+          localStorage.setItem("user_data", JSON.stringify(response.data.user));
+          console.log(response.data.user)
           this.$axios.defaults.headers.common["auth_token"] = this.user_token;
           this.user_registered = true;
           this.$router.replace({ name: "Home" });

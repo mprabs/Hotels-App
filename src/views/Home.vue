@@ -1,134 +1,146 @@
 <template>
   <div class="home">
-    <Navbar />
-    <p>
-      {{ `Good ${timeOfTheDay}, ${user.name} !` }}
-    </p>
-    <div class="menu-bar">
-      <div class="buttons">
-        <button data-toggle="modal" data-target="#addHotel" class="btn btn-danger">
-          Add new hotel
-        </button>
-        <button data-toggle="modal" data-target="#seeBookings" class="btn btn-danger">
-          See my bookings
-          <span class="badge badge-light">{{ myBookings.length }}</span>
-        </button>
+    <Navbar @profile="viewProfileSideBar" />
+    <div class="body">
+      <div class="content">
+      <p>
+        {{ `Good ${timeOfTheDay}, ${user.user.name} !` }}
+      </p>
+      <div class="menu-bar">
+        <div class="buttons">
+          <button data-toggle="modal" data-target="#addHotel" class="btn btn-danger">
+            Add new hotel
+          </button>
+          <button data-toggle="modal" data-target="#seeBookings" class="btn btn-danger">
+            See my bookings
+            <span class="badge badge-light">{{ myBookings.length }}</span>
+          </button>
+        </div>
       </div>
-    </div>
-    <div
-      class="modal fade"
-      id="addHotel"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="addHotelTitle"
-      aria-hidden="true"
-    >
-      <AddHotel :success="getHotels" />
-    </div>
-    <div class="toasts">
-      <transition name="slide-fade">
-        <p class="error-message" :style="[snackBar]" v-if="isBooked">Successfully Booked !</p>
-        <p class="error-message" :style="[snackBar]" v-else-if="isCancelled" >
-          Successfully Cancelled !
-        </p>
-      </transition>
-    </div>
-    <br />
-    <div class="container">
-      <div class="row">
-        <div
-          v-for="hotel in hotels"
-          :key="hotel._id"
-          class="item-container col-sm"
-        >
-          <div class="card card-inverse card-info">
-            <img class="card-img-top" :src="hotel.image" />
-            <div class="card-block">
-              <figure class="profile">
-                <img :src="hotel.image" class="profile-avatar" alt="" />
-              </figure>
-              <h4 class="card-title mt-3">{{ "Hotel " + hotel.name }}</h4>
-              <div class="meta card-text">
-                <a>{{ hotel.address || "N/A" }}</a>
+      <div
+        class="modal fade"
+        id="addHotel"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="addHotelTitle"
+        aria-hidden="true"
+      >
+        <AddHotel :success="getHotels" />
+      </div>
+      <div class="toasts">
+        <transition name="slide-fade">
+          <p class="error-message" :style="[snackBar]" v-if="isBooked">Successfully Booked !</p>
+          <p class="error-message" :style="[snackBar]" v-else-if="isCancelled" >
+            Successfully Cancelled !
+          </p>
+        </transition>
+      </div>
+      <br />
+      <div class="container">
+        <div class="loading" v-if="loading">
+          <Loader />
+        </div>
+        <div v-else class="row">
+          <div
+            v-for="hotel in hotels"
+            :key="hotel._id"
+            class="item-container col-sm"
+          >
+            <div class="card card-inverse card-info">
+              <img class="card-img-top" :src="hotel.image" />
+              <div class="card-block">
+                <figure class="profile">
+                  <img :src="hotel.image" class="profile-avatar" alt="" />
+                </figure>
+                <h4 class="card-title mt-3">{{ "Hotel " + hotel.name }}</h4>
+                <div class="meta card-text">
+                  <a>{{ hotel.address || "N/A" }}</a>
+                </div>
+                <div class="card-text">
+                  {{ hotel.description || "Description not available." }}
+                </div>
               </div>
-              <div class="card-text">
-                {{ hotel.description || "Description not available." }}
+              <div class="card-footer">
+                <small>
+                  <a
+                    data-toggle="modal"
+                    data-target="#updateHotel"
+                    class="action update"
+                    @click="updateHotel(hotel)"
+                    >Update
+                    </a>
+                  <a @click="deleteHotel(hotel)" class="action delete">Delete</a>
+                </small>
               </div>
-            </div>
-            <div class="card-footer">
-              <small>
-                <a
+                <button
+                  @click="
+                    !isHotelBooked ? bookHotel(hotel._id) : (isHotelBooked = false)
+                  "
                   data-toggle="modal"
-                  data-target="#updateHotel"
-                  class="action update"
-                  @click="updateHotel(hotel)"
-                  >Update
-                  </a>
-                <a @click="deleteHotel(hotel)" class="action delete">Delete</a>
-              </small>
+                  data-target="#bookModal"
+                  class="btn btn-primary book-btn float-right btn-sm"
+                >
+                  Book Now
+                </button>
+                <div v-if="hotelToUpdate">
+                  <div
+                    class="modal fade"
+                    id="updateHotel"
+                    tabindex="-1"
+                    role="dialog"
+                    aria-labelledby="updateHotelTitle"
+                    aria-hidden="true"
+                  >
+                    <AddHotel :hotel="hotelToUpdate" @success="onAddHotel" />
+                  </div>
+                </div>
+                <div v-if="isHotelBooked && hotelId === hotel._id">
+                  <div
+                    class="modal fade"
+                    id="bookModal"
+                    tabindex="-1"
+                    role="dialog"
+                    aria-labelledby="bookModalTitle"
+                    aria-hidden="true"
+                  >
+                    <BookingForm :user="user" :hotel="hotel" @new-booking="addBooking" />
+                  </div>
+                </div>
             </div>
-              <button
-                @click="
-                  !isHotelBooked ? bookHotel(hotel._id) : (isHotelBooked = false)
-                "
-                data-toggle="modal"
-                data-target="#bookModal"
-                class="btn btn-primary book-btn float-right btn-sm"
-              >
-                Book Now
-              </button>
-              <div v-if="hotelToUpdate">
-                <div
-                  class="modal fade"
-                  id="updateHotel"
-                  tabindex="-1"
-                  role="dialog"
-                  aria-labelledby="updateHotelTitle"
-                  aria-hidden="true"
-                >
-                  <AddHotel :hotel="hotelToUpdate" @success="onAddHotel" />
-                </div>
-              </div>
-              <div v-if="isHotelBooked && hotelId === hotel._id">
-                <div
-                  class="modal fade"
-                  id="bookModal"
-                  tabindex="-1"
-                  role="dialog"
-                  aria-labelledby="bookModalTitle"
-                  aria-hidden="true"
-                >
-                  <BookingForm :user="user" :hotel="hotel" @new-booking="addBooking" />
-                </div>
-              </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="paginations">
-      <div class="prev">
-        <a @click="goToPrev()" :style="this.prev ? 'color: white' : 'color: rgb(94, 68, 163)'">Previous</a>
+      <div class="paginations">
+        <div class="prev">
+          <a @click="goToPrev()" :style="this.prev ? 'color: white' : 'color: rgb(94, 68, 163)'">Previous</a>
+        </div>
+        <div class="page-number">
+          <b>{{this.page}}</b>
+        </div>
+        <div class="next">
+          <a @click="goToNext()" :style="this.next ? 'color: white' : 'color: rgb(94, 68, 163)'">Next</a>
+        </div>
       </div>
-      <div class="page-number">
-        <b>{{this.page}}</b>
+      <div
+        class="modal fade"
+        id="seeBookings"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="seeBookingsTitle"
+        aria-hidden="true"
+      >
+        <Booking :bookings="myBookings" @cancelledItem="cancelBooking" />
       </div>
-      <div class="next">
-        <a @click="goToNext()" :style="this.next ? 'color: white' : 'color: rgb(94, 68, 163)'">Next</a>
+      <br />
+      <br />
+      <br />
       </div>
+      <transition name="fade">
+        <div v-if="showProfile" class="sidebar">
+            <ProfileBadge />
+        </div>
+      </transition>
     </div>
-    <div
-      class="modal fade"
-      id="seeBookings"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="seeBookingsTitle"
-      aria-hidden="true"
-    >
-      <Booking :bookings="myBookings" @cancelledItem="cancelBooking" />
-    </div>
-    <br />
-    <br />
-    <br />
   </div>
 </template>
 
@@ -138,6 +150,8 @@ import Navbar from "../components/navigation";
 import Booking from "../components/myBookings";
 import BookingForm from "../components/bookingForm";
 import AddHotel from "../components/addHotel";
+import ProfileBadge from "../components/profileBadge";
+import Loader from "../components/loader";
 
 const URL = "http://localhost:8081"
 
@@ -146,7 +160,9 @@ export default {
     Booking,
     BookingForm,
     AddHotel,
-    Navbar
+    Navbar,
+    ProfileBadge,
+    Loader
   },
   data() {
     return {
@@ -172,8 +188,10 @@ export default {
       prev: "",
       next: "",
       page: 1,
+      loading: false,
       limit: 10,
       timeOfTheDay: "",
+      showProfile: false,
       snackBar: {
         padding: '15px',
         margin: '0 auto',
@@ -198,6 +216,9 @@ export default {
       console.log('Hotel Added', data)
       this.getHotels();
     },
+    viewProfileSideBar() {
+      this.showProfile = !this.showProfile;
+    },
     goToPrev() {
       this.page = this.prev.page;
       this.getHotels();
@@ -207,7 +228,7 @@ export default {
       this.getHotels();
     },
     getHotels() {
-      console.log('Get hotels')
+      this.loading = true;
       this.$axios
         .get(`${URL}/hotels?page=${this.page}&limit=${this.limit}`)
         .then(response => {
@@ -215,6 +236,7 @@ export default {
           this.prev = response.data.prev;
           this.next = response.data.next;
           this.getBookingsData();
+          this.loading = false;
         })
         .catch(error => {
           this.errorMessage = error;
@@ -265,6 +287,7 @@ export default {
     this.user = JSON.parse(localStorage.getItem("user_data"));
     this.getHotels();
     this.calculateCurrentTime();
+    window.document.body.onscroll = () => this.showProfile = false;
   },
   watch: {
     hotels: function() {
@@ -282,6 +305,13 @@ export default {
 .home p {
   color: white;
   font-size: 20px;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 
 .paginations {
@@ -358,7 +388,7 @@ figure img {
  }
 
  .row {
-   grid-template-columns: 1fr;
+   flex-wrap: wrap;
  }
 }
 
@@ -532,5 +562,29 @@ h5 {
 /* .slide-fade-leave-active below version 2.1.8 */ {
   transform: translateX(10px);
   opacity: 0;
+}
+
+.body {
+  display: flex;
+}
+
+.sidebar {
+  flex: 0.4;
+  background:#d4d4d5;
+  overflow: hidden;
+  position: absolute;
+  right: 0;
+  width: 30vw;
+  height: 100vh;
+  transform: translateY(-70px);
+}
+
+.content {
+  flex: 0.6;
+  flex-grow: 1;
+}
+
+.loading {
+  margin: 0 auto;
 }
 </style>

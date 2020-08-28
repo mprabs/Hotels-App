@@ -4,7 +4,9 @@
           <h3>Hotels App</h3>
       </div>
       <ul class="nav-items">
-          <li>Home</li>
+          <li class="profile-button">
+              <a @click="$emit('profile')">Profile</a>
+          </li>
           <li class="logout-button">
               <a @click="logout()">Logout</a>
           </li>
@@ -50,9 +52,12 @@ export default {
     margin: 0;
 }
 
+.nav-items li {
+    cursor: pointer;
+}
+
 .logout-button {
     color: brown;
-  cursor: pointer;
 }
 
 .logout-button:hover {

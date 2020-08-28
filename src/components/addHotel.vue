@@ -10,13 +10,16 @@
         <!-- {{ hotel.name }} -->
         <div class="input-group">
           <label for="hotelName">Hotel Name</label>
-          <input id="hotelName" v-model="new_hotel_name" placeholder="Hotel Name" />
+          <input id="hotelName" v-model="new_hotel_name" />
           <br />
-          <label for="hotelAddress">Hotel Address</label>
-          <input id="hotelAddress" v-model="new_hotel_address" placeholder="Address" />
+          <label for="hotelAddress">Address</label>
+          <input id="hotelAddress" v-model="new_hotel_address" />
           <br />
-          <label for="hotelNumber">Hotel Number</label>
-          <input id="hotelNumber" v-model="new_hotel_number" placeholder="Number" />
+          <label for="hotelNumber">Number</label>
+          <input id="hotelNumber" v-model="new_hotel_number" />
+          <br />
+          <label for="hotelDescription">Description (optional)</label>
+          <textarea id="hotelDescription" rows="3" v-model="new_hotel_description" />
           <br />
           <div class="image">
             <label class="custom-file-upload">
@@ -72,6 +75,7 @@ export default {
       new_hotel_name: "",
       new_hotel_address: "",
       new_hotel_number: "",
+      new_hotel_description: "",
       new_hotel: {},
       isDataEmpty: "",
       file: "",
@@ -91,7 +95,8 @@ export default {
         name: this.new_hotel_name,
         address: this.new_hotel_address,
         number: this.new_hotel_number,
-        image: this.image
+        image: this.image,
+        description: this.new_hotel_description
       };
       if (this.hotel) {
         this.$axios
@@ -130,6 +135,7 @@ export default {
       (this.new_hotel_name = this.hotel.name),
       (this.new_hotel_address = this.hotel.address),
       (this.new_hotel_number = this.hotel.number),
+      (this.new_hotel_description = this.hotel.description),
       (this.image = this.hotel.image);
     }
   },
