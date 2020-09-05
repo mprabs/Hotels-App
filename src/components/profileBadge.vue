@@ -6,8 +6,8 @@
       </div>
       <hr class="badge-hr" />
       <div class="badge-details">
-        <div class="name">{{ json.user.name }}</div>
-        <div class="email">{{ json.user.email }}</div>
+        <div class="name">{{ user.name }}</div>
+        <div class="email">{{ user.email }}</div>
       </div>
   </div>
 </template>
@@ -16,12 +16,12 @@
 export default {
     data() {
         return {
-            json: ""
+            user: ""
         }
     },
     mounted() {
-        this.json = JSON.parse(localStorage.getItem('user_data'))
-        console.log('user',this.json)
+        this.user = JSON.parse(localStorage.getItem('user_data'))
+        console.log('user',this.user)
     }
 }
 </script>

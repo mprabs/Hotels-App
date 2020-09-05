@@ -4,7 +4,7 @@
     <div class="body">
       <div class="content">
       <p>
-        {{ `Good ${timeOfTheDay}, ${user.user.name} !` }}
+        {{ `Good ${timeOfTheDay}, ${user.name} !` }}
       </p>
       <div class="menu-bar">
         <div class="buttons">
@@ -44,7 +44,7 @@
           <div
             v-for="hotel in hotels"
             :key="hotel._id"
-            class="item-container col-sm"
+            class="item-container col-xs-4"
           >
             <div class="card card-inverse card-info">
               <img class="card-img-top" :src="hotel.image" />
@@ -308,7 +308,7 @@ export default {
 }
 
 .fade-enter-active, .fade-leave-active {
-  transition: opacity .5s;
+  transition: opacity .3s;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
@@ -354,8 +354,10 @@ export default {
 
 .row {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, 350px);
   gap: 30px;
+  width: 100vw;
+  place-items: center;
 }
 
 figure img {
@@ -461,8 +463,8 @@ h5 {
 .card-img-top {
   display: block;
   object-fit: cover;
-  width: 100%;
   height: 300px;
+  width: 300px;
 }
 
 .card-title {
@@ -572,7 +574,8 @@ h5 {
   flex: 0.4;
   background:#d4d4d5;
   overflow: hidden;
-  position: absolute;
+  position: fixed;
+  top: 20;
   right: 0;
   width: 30vw;
   height: 100vh;
