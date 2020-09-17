@@ -19,6 +19,12 @@
             />
           </div>
           <div class="book-details">
+            <div class="period">
+              From
+              <input type="date" v-model="bookFrom" />
+              to
+              <input type="date" v-model="bookTo" />
+            </div>
             <select class="custom-select" size="3" v-model="numberOfRooms">
               <option disabled value>Number of rooms</option>
               <option>1</option>
@@ -26,12 +32,6 @@
               <option>3</option>
               <option>4</option>
             </select>
-            <div class="period">
-              From
-              <input type="date" v-model="bookFrom" />
-              to
-              <input type="date" v-model="bookTo" />
-            </div>
           </div>
         </div>
         <div class="infos">
@@ -106,7 +106,7 @@ export default {
         bookTo: this.bookTo,
         numberOfRooms: this.numberOfRooms
       }
-      this.$axios.post('http://localhost:8081/bookings', newBooking);
+      this.$axios.post('https://hotels-api-deploy.herokuapp.com/bookings', newBooking);
       this.bookings.push(newBooking);
       this.$emit("new-booking", this.bookings);
     }
@@ -141,7 +141,7 @@ export default {
 
 .book-details {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 20px;
 }
 
@@ -149,13 +149,13 @@ export default {
   display: grid;
   grid-template-columns: 1fr;
   gap: 10px;
-  background-color: chocolate;
-  color: aliceblue;
-  border: 2px solid rgb(231, 168, 168);
+  background-color: rgb(209, 228, 241);
+  color: rgb(39, 40, 41);
+  border: 2px solid rgb(59, 58, 58);
   padding: 20px;
 }
 
-select { 
+/* select { 
   text-align-last: center;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -179,7 +179,7 @@ option:before{
 }
 option:hover:before{
     display:inline;
-}
+} */
 
 
 </style>

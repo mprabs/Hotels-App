@@ -59,7 +59,7 @@ export default {
     },
     login() {
       this.$axios
-        .post("http://localhost:8081/users/login", {
+        .post("https://hotels-api-deploy.herokuapp.com/users/login", {
           email: this.user_email,
           password: this.user_password
         })

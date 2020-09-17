@@ -154,7 +154,7 @@ import ProfileBadge from "../components/profileBadge";
 import Loader from "../components/loader";
 // import instance from "../helper/instance"
 
-const URL = "http://localhost:8081"
+const URL = "https://hotels-api-deploy.herokuapp.com"
 
 export default {
   components: {
@@ -215,7 +215,7 @@ export default {
     },
     onAddHotel(data) {
       console.log('Hotel Added', data)
-      this.getHotels();
+      // this.getHotels();
     },
     viewProfileSideBar() {
       this.showProfile = !this.showProfile;
@@ -272,10 +272,9 @@ export default {
     },
     async getBookingsData() {
       const user = JSON.parse(localStorage.getItem("user_data"))
-      this.$axios.get('http://localhost:8081/bookings').then(response =>{
+      this.$axios.get(`${URL}/bookings`).then(response =>{
         this.bookingList = response.data;
-        console.log(this.bookingList)
-        this.myBookings = this.bookingList.filter(item => item.user[0]._id == user._id)
+        this.myBookings = this.bookingList.filter(item => item.user[0]._id === user._id)
       })
     }
   },
@@ -449,7 +448,8 @@ h5 {
   padding: 0;
   border: none;
   border-radius: 0.28571429rem;
-  box-shadow: 0 1px 3px 0 #d4d4d5, 0 0 0 1px #d4d4d5;
+  box-shadow: 0 1px 3px 0 #7c7c7e, 0 0 0 1px #d4d4d5;
+  background-color: #ececf0;
 }
 
 .card-block {

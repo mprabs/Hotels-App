@@ -70,7 +70,7 @@ export default {
   methods: {
     register() {
       this.$axios
-        .post("http://localhost:8081/users/register", {
+        .post("https://hotels-api-deploy.herokuapp.com/users/register", {
           name: this.user_name,
           email: this.user_email,
           password: this.user_password

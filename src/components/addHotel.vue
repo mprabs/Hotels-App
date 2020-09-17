@@ -1,5 +1,5 @@
 <template>
-  <div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal-dialog modal-dialog-centered add__hotel" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <div class="modal-title w-100 text-center">
@@ -67,7 +67,7 @@
 
 // import getArrayofBase from '../helper/base64decoder';
 
-const URL = "http://localhost:8081/hotels";
+const URL = "https://hotels-api-deploy.herokuapp.com/hotels";
 
 export default {
   data() {
@@ -113,6 +113,7 @@ export default {
             this.errorMessage = error.message;
           });
       }
+      this.$emit('success')
     },
     clear() {
       this.new_hotel_name = this.new_hotel_address = this.new_hotel_number = this.image ="";
@@ -155,25 +156,24 @@ export default {
 </script>
 
 <style>
-.error-message {
+.add__hotel .error-message {
   color: rgb(255, 0, 0);
 }
 
-.input-group {
+.add__hotel .input-group {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: left;
 }
 
-.input-group input {
+.add__hotel .input-group input, .add__hotel textarea {
   padding: 10px;
   border: 2px solid rgb(194, 194, 196);
-  border-radius: 30px;
   text-align: center;
 }
 
-.custom-file-upload {
+.add__hotel .custom-file-upload {
     border: 1px solid #ccc;
     display: inline-block;
     padding: 6px 12px;
@@ -184,31 +184,27 @@ export default {
     align-items: center;
 }
 
-input:focus{
+.add__hotel input:focus{
     outline: none;
     border: 2px solid blueviolet;
     background-color: rgb(238, 244, 246);
 }
 
-input[type="file"] {
+.add__hotel input[type="file"] {
     display: none;
 }
 
-.image {
+.add__hotel .image {
   display: flex;
   justify-content: space-between;
 }
 
-.add-btn {
+.add__hotel .add-btn {
   width: 100%;
   margin-top: 30px;
 }
 
-.image img {
-  margin: 0 auto;
-}
-
-.image label {
-  flex: 0.7;
+.add__hotel .image label {
+  padding: 40px;
 }
 </style>
