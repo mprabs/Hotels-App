@@ -28,7 +28,7 @@
               <button
                 class="btn btn-danger cancel-button"
                 data-dismiss="modal"
-                @click="$emit('cancelledItem', booking._id)"
+                @click="$emit('cancelleditem', booking._id)"
               >
                 Cancel Booking
               </button>

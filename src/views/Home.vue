@@ -129,7 +129,7 @@
         aria-labelledby="seeBookingsTitle"
         aria-hidden="true"
       >
-        <Booking :bookings="myBookings" @cancelledItem="cancelBooking" />
+        <Booking :bookings="myBookings" @cancelleditem="cancelBooking" />
       </div>
       <br />
       <br />
@@ -152,6 +152,7 @@ import BookingForm from "../components/bookingForm";
 import AddHotel from "../components/addHotel";
 import ProfileBadge from "../components/profileBadge";
 import Loader from "../components/loader";
+// import instance from "../helper/instance"
 
 const URL = "http://localhost:8081"
 
@@ -273,7 +274,8 @@ export default {
       const user = JSON.parse(localStorage.getItem("user_data"))
       this.$axios.get('http://localhost:8081/bookings').then(response =>{
         this.bookingList = response.data;
-        this.myBookings = this.bookingList.filter(item => item.user[0]._id == user.id)
+        console.log(this.bookingList)
+        this.myBookings = this.bookingList.filter(item => item.user[0]._id == user._id)
       })
     }
   },

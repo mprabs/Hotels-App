@@ -100,7 +100,7 @@ export default {
       }
       const newBooking = {
         hotel: this.hotel._id,
-        user: this.user.id,
+        user: this.user._id,
         contact: this.book_user_number,
         bookFrom: this.bookFrom,
         bookTo: this.bookTo,
