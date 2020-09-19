@@ -40,7 +40,7 @@
         <div class="loading" v-if="loading">
           <Loader />
         </div>
-        <div v-else class="row">
+        <div v-else class="card-row">
           <div
             v-for="hotel in hotels"
             :key="hotel._id"
@@ -215,7 +215,7 @@ export default {
     },
     onAddHotel(data) {
       console.log('Hotel Added', data)
-      // this.getHotels();
+      this.getHotels();
     },
     viewProfileSideBar() {
       this.showProfile = !this.showProfile;
@@ -288,7 +288,7 @@ export default {
     this.user = JSON.parse(localStorage.getItem("user_data"));
     this.getHotels();
     this.calculateCurrentTime();
-    window.document.body.onscroll = () => this.showProfile = false;
+    // window.document.body.onscroll = () => this.showProfile = false;
   },
   watch: {
     hotels: function() {
@@ -304,8 +304,12 @@ export default {
   margin-top: 20vh;
 }
 .home p {
-  color: white;
+  color: rgb(90, 89, 89);
   font-size: 20px;
+}
+
+h4 {
+  font-family: 'Poppins';
 }
 
 .fade-enter-active, .fade-leave-active {
@@ -353,9 +357,9 @@ export default {
   margin: 10px;
 }
 
-.row {
+.card-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, 350px);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 30px;
   width: 100vw;
   place-items: center;
@@ -574,7 +578,8 @@ h5 {
 
 .sidebar {
   flex: 0.4;
-  background:#d4d4d5;
+  background:#161616;
+  color: #ececf0;
   overflow: hidden;
   position: fixed;
   top: 20;
