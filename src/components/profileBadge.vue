@@ -30,7 +30,7 @@ export default {
 .profile-body {
     display: flex;
     flex-direction: column;
-    margin: 20px;
+    margin: 10px;
 }
 
 .edit {

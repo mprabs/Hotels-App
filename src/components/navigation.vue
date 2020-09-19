@@ -6,7 +6,7 @@
       <ul class="nav-items">
           <li class="profile-button">
               <a @click="$emit('profile')"> 
-                  <i class="fas fa-user-circle"></i>
+                  <i :class="showProfile? 'fas fa-times' : 'fas fa-user-circle'"></i>
               </a>
           </li>
           <li class="logout-button">
@@ -22,6 +22,11 @@ export default {
         logout() {
             this.$router.replace({ name: "login" });
             localStorage.clear();
+        }
+    },
+    props: {
+        showProfile: {
+            type: String
         }
     }
 }

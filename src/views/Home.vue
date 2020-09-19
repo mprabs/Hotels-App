@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <Navbar @profile="viewProfileSideBar" />
+    <Navbar @profile="viewProfileSideBar" :showProfile="showProfile" />
     <div class="body">
       <div class="content">
       <p>
@@ -597,14 +597,13 @@ h5 {
 }
 
 .sidebar {
-  flex: 0.4;
   background:#161616;
   color: #ececf0;
   overflow: hidden;
   position: fixed;
-  top: 20;
+  top: 10;
   right: 0;
-  width: 30vw;
+  min-width: 400px;
   height: 100vh;
   transform: translateY(-70px);
 }
