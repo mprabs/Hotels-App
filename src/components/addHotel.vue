@@ -7,27 +7,42 @@
         </div>
       </div>
       <div class="modal-body">
-        <!-- {{ hotel.name }} -->
-        <div class="input-group">
-          <label for="hotelName">Hotel Name</label>
-          <input id="hotelName" v-model="new_hotel_name" />
-          <br />
-          <label for="hotelAddress">Address</label>
-          <input id="hotelAddress" v-model="new_hotel_address" />
-          <br />
-          <label for="hotelNumber">Number</label>
-          <input id="hotelNumber" v-model="new_hotel_number" />
-          <br />
-          <label for="hotelDescription">Description (optional)</label>
-          <textarea id="hotelDescription" rows="3" v-model="new_hotel_description" />
-          <br />
+        <form class="input-group" @submit.prevent>
+          <div class="field">
+            <label for="hotelName">Hotel Name</label>
+            <div class="input__field">
+              <i class="fas fa-hotel"></i> 
+              <input id="hotelName" v-model="new_hotel_name" />
+            </div>
+          </div>
+          <div class="hotel__address field">
+            <label for="hotelAddress">Address</label>
+            <div class="input__field">
+              <i class="fas fa-map-marker"></i> 
+              <input id="hotelAddress" v-model="new_hotel_address" />
+            </div>
+          </div>
+          <div class="hotel__number field">
+            <label for="hotelNumber">Number</label>
+            <div class="input__field">
+              <i class="fas fa-phone"></i> 
+              <input id="hotelNumber" v-model="new_hotel_number" />
+            </div>
+          </div>
+          <div class="hotel__description field">
+            <label for="hotelDescription"><i class="fas fa-info-circle"></i> Description (optional)</label>
+            <textarea id="hotelDescription" rows="3" v-model="new_hotel_description" />
+          </div>
           <div class="image">
             <label class="custom-file-upload">
               <input type="file" accept="image/*" @change="onFileChange" />
-              Upload A Picture
+              Click here to upload a picture
             </label>
             <div v-if="image">
               <img :src="image" height="100" width="100" />
+            </div>
+            <div v-else>
+              <img src="../images/not-available.png" height="100" width="100" />
             </div>  
           </div>
 
@@ -35,14 +50,15 @@
             {{ errorMessage }}
           </p>
 
-        </div>
           <button
             class="btn btn-primary add-btn"
-            :data-dismiss="isDataEmpty == false ? 'modal' : 0"
+            type="submit"
             @click="addHotel()"
+            :data-dismiss="isDataEmpty == false ? 'modal' : 0"
           >
             {{ hotel ? "Update" : "Add" }}
           </button>
+        </form>
       </div>
       <div class="modal-footer">
         <button
@@ -160,17 +176,26 @@ export default {
   color: rgb(255, 0, 0);
 }
 
-.add__hotel .input-group {
+.add__hotel .input__field {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: left;
+  align-items: center;
+  padding: 0 20px;
+  background: rgb(252, 250, 250);
 }
 
-.add__hotel .input-group input, .add__hotel textarea {
-  padding: 10px;
-  border: 2px solid rgb(194, 194, 196);
-  text-align: center;
+.add__hotel .input__field input {
+  border: none;
+  flex: 1;
+  font-size: 22px;
+}
+
+.add__hotel .input__field input:focus {
+  outline: none;
+}
+
+.add__hotel textarea {
+  width: 95%;
+  margin: 0 auto;
 }
 
 .add__hotel .custom-file-upload {
@@ -182,12 +207,6 @@ export default {
     margin: 0 auto;
     justify-content: center;
     align-items: center;
-}
-
-.add__hotel input:focus{
-    outline: none;
-    border: 2px solid blueviolet;
-    background-color: rgb(238, 244, 246);
 }
 
 .add__hotel input[type="file"] {
@@ -205,6 +224,15 @@ export default {
 }
 
 .add__hotel .image label {
-  padding: 40px;
+  padding: 20px;
+  background-color: rgb(241, 240, 240);
+}
+
+.add__hotel .field {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 0;
+  width: 100%;
+  position: relative;
 }
 </style>
