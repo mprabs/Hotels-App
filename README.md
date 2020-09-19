@@ -1,4 +1,4 @@
-# hotels-app
+# Hotels-app
 App Functionalities:
 - List of Hotels
 - Addition of hotel
