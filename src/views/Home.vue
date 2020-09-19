@@ -9,9 +9,11 @@
       <div class="menu-bar">
         <div class="buttons">
           <button data-toggle="modal" data-target="#addHotel" class="btn btn-danger">
+            <i class="fas fa-plus"></i>
             Add new hotel
           </button>
           <button data-toggle="modal" data-target="#seeBookings" class="btn btn-danger">
+            <i class="fas fa-eye"></i>
             See my bookings
             <span class="badge badge-light">{{ myBookings.length }}</span>
           </button>
@@ -54,7 +56,7 @@
                 </figure>
                 <h4 class="card-title mt-3">{{ "Hotel " + hotel.name }}</h4>
                 <div class="meta card-text">
-                  <a>{{ hotel.address || "N/A" }}</a>
+                  <a> <i class="fas fa-map-marker-alt"></i> {{ hotel.address || "N/A" }}</a>
                 </div>
                 <div class="card-text">
                   {{ hotel.description || "Description not available." }}
@@ -67,9 +69,13 @@
                     data-target="#updateHotel"
                     class="action update"
                     @click="updateHotel(hotel)"
-                    >Update
+                    >
+                    <i class="fas fa-edit"></i>
+                    Update
                     </a>
-                  <a @click="deleteHotel(hotel)" class="action delete">Delete</a>
+                  <a @click="deleteHotel(hotel)" class="action delete">
+                    <i class="fas fa-trash"></i>
+                    Delete</a>
                 </small>
               </div>
                 <button
@@ -110,15 +116,19 @@
           </div>
         </div>
       </div>
-      <div class="paginations">
+      <div v-if="loading == false" class="paginations">
         <div class="prev">
-          <a @click="goToPrev()" :style="this.prev ? 'color: white' : 'color: rgb(94, 68, 163)'">Previous</a>
+          <a @click="goToPrev()" :style="this.prev ? 'color: white' : 'color: rgb(94, 68, 163)'">
+                    <i class="fas fa-arrow-left"></i>
+          </a>
         </div>
         <div class="page-number">
           <b>{{this.page}}</b>
         </div>
         <div class="next">
-          <a @click="goToNext()" :style="this.next ? 'color: white' : 'color: rgb(94, 68, 163)'">Next</a>
+          <a @click="goToNext()" :style="this.next ? 'color: white' : 'color: rgb(94, 68, 163)'">
+                    <i class="fas fa-arrow-right"></i>
+          </a>
         </div>
       </div>
       <div
@@ -272,9 +282,12 @@ export default {
     },
     async getBookingsData() {
       const user = JSON.parse(localStorage.getItem("user_data"))
+      console.log(user)
       this.$axios.get(`${URL}/bookings`).then(response =>{
         this.bookingList = response.data;
+        console.log(this.bookingList)
         this.myBookings = this.bookingList.filter(item => item.user[0]._id === user._id)
+        console.log(this.myBookings)
       })
     }
   },
@@ -302,6 +315,7 @@ export default {
 
 .home {
   margin-top: 20vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 .home p {
   color: rgb(90, 89, 89);
@@ -449,12 +463,18 @@ h5 {
 .card {
   font-size: 1em;
   overflow: hidden;
-  padding: 0;
+  padding: 2px;
   border: none;
   border-radius: 0.28571429rem;
-  box-shadow: 0 1px 3px 0 #7c7c7e, 0 0 0 1px #d4d4d5;
+  box-shadow: 0 3px 5px 0 #7c7c7e, 0 0 0 1px #d4d4d5;
   background-color: #ececf0;
 }
+
+/* .card:hover{
+  padding: 0;
+  border: 2px solid rgb(150, 150, 223);
+  transform: scale(1.05);
+} */
 
 .card-block {
   font-size: 1em;

@@ -5,10 +5,12 @@
       </div>
       <ul class="nav-items">
           <li class="profile-button">
-              <a @click="$emit('profile')">Profile</a>
+              <a @click="$emit('profile')"> 
+                  <i class="fas fa-user-circle"></i>
+              </a>
           </li>
           <li class="logout-button">
-              <a @click="logout()">Logout</a>
+              <a @click="logout()"><i class="fas fa-power-off"></i></a>
           </li>
       </ul>
   </div>
@@ -33,7 +35,7 @@ export default {
     background-color: rgb(52, 52, 59);
     color: rgb(182, 182, 182);
     height: 10vh;
-    padding: 20px;
+    padding: 0 20px;
     position: fixed;
     top: 0;
     width: 100%;
@@ -45,24 +47,30 @@ export default {
 }
 
 .nav-items {
-    flex: 0.3;
+    flex: 0.1;
     display: flex;
     list-style: none;
-    justify-content: space-evenly;
+    justify-content: space-around;
     margin: 0;
 }
 
 .nav-items li {
     cursor: pointer;
+    font-size: 20px;
+}
+
+.nav-items li:hover {
+    color: yellow;
 }
 
 .logout-button {
-    color: brown;
+    color: rgb(241, 158, 158);
 }
 
-.logout-button:hover {
-  color: rgb(205, 81, 50);
+.profile-button {
+    color: rgb(183, 183, 235);
 }
+
 
 @media screen and (max-width:900px){
     .nav-items {

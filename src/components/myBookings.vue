@@ -15,24 +15,32 @@
         <div class="container bookings-container">
           <div class="row">
             <div class="col-md-6">
-              Hotel: {{ booking.hotel[0].name }} <br /><br />
-              Date from: {{ booking.bookFrom }} <br /><br />
-              Date to: {{ booking.bookTo }} <br /><br />
-              Number of rooms: {{ booking.numberOfRooms }} <br /><br />
-              <br />
+              <div class="book__details">
+                <div class="book__hotel">
+                  <i class="fas fa-hotel"></i>
+                   <span>{{ booking.hotel[0].name }}</span>
+                </div>
+                <div class="book__date">
+                  <i class="fas fa-calendar-day"></i>
+                  From <span>{{ booking.bookFrom }}</span>
+                  to <span>{{ booking.bookTo }}</span>
+                </div>
+                <div class="book__numberOfRooms">
+                  <i class="fas fa-door-open"></i>
+                  Number of rooms: <span>{{ booking.numberOfRooms }}</span>
+                </div>
+              </div>
             </div>
             <div class="col-md-6">
               <img :src="booking.hotel[0].image" alt=""><br />
             </div>
-            <div class="col-md-12">
-              <button
-                class="btn btn-danger cancel-button"
-                data-dismiss="modal"
-                @click="$emit('cancelleditem', booking._id)"
-              >
-                Cancel Booking
-              </button>
-            </div>
+            <button
+              class="cancel-button"
+              data-dismiss="modal"
+              @click="$emit('cancelleditem', booking._id)"
+            >
+              <i class="fas fa-times"></i>
+            </button>
           </div>
         </div>
       </div>
@@ -71,15 +79,72 @@ img {
   object-fit: contain;
 }
 
+.row {
+  position: relative;
+}
+
 .cancel-button {
-  width: 80%;
+  height: 30px;
+  width: 30px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(10px, -35px);
+  border-radius: 50%;
+  border: none;
+  background-color: red;
+  color: white;
+  box-shadow: 0 0 3px 1px rgb(163, 159, 159);
+}
+
+.cancel-button:hover {
+  background-color: rgb(170, 1, 1);
 }
 
 .bookings-container {
-  color: white;
+  color: rgb(49, 47, 47);
   margin: 20px;
   padding: 20px;
-  background-color: rgb(47, 47, 71);
-  border-radius: 30px;
+  background-color: rgb(245, 245, 245);
+  border-radius: 5px;
+  box-shadow: 0 0 5px 0 rgb(161, 158, 158);
+  border: 2px solid transparent;
 }
+
+.bookings-container:hover {
+  border: 2px solid rgb(151, 151, 238);
+}
+
+.book__details .fas {
+  opacity: 0.5;
+}
+
+.book__details .book__hotel {
+  font-size: 20px;
+  color: rgb(75, 75, 116);
+  text-transform: uppercase;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.book__hotel::after {
+  content: "";
+  height: 2px;
+  width: 75%;
+  margin: 0 auto;
+  background-color: rgb(197, 190, 190);
+  margin-bottom: 10px;
+}
+
+.book__details span {
+  font-weight: bold;
+}
+
+.book__details {
+  margin-bottom: 20px;
+}
+
+
+
 </style>

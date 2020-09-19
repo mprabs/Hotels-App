@@ -20,6 +20,9 @@
         <input type="password" v-model="user_password" placeholder="Password" />
         <br />
         <br />
+        <div v-if="loading">
+          <loader />
+        </div>
         <b v-if="displayErrorMessage" class="text-danger">{{ message }}</b>
         <br />
       </div>
@@ -35,6 +38,8 @@
 
 <script>
 // import instance from "./axiosheader.js";
+import loader from "../components/loader";
+import { LOCAL_URL, WEB_URL } from '../../config'
 export default {
   name: "login",
   data() {
@@ -44,8 +49,12 @@ export default {
       user_token: "",
       user_registered: false,
       message: "",
-      displayErrorMessage: false
+      displayErrorMessage: false,
+      loading: false
     };
+  },
+  components: {
+    loader
   },
   mounted() {
     if (localStorage.getItem("user_token")) {
@@ -58,12 +67,16 @@ export default {
       this.$router.replace({ name: "register" });
     },
     login() {
+      this.loading = true;
+      console.log("login")
       this.$axios
-        .post("https://hotels-api-deploy.herokuapp.com/users/login", {
+        .post(`${LOCAL_URL || WEB_URL}/users/login`, {
           email: this.user_email,
           password: this.user_password
         })
         .then(response => {
+          this.loading = false;
+          this.displayErrorMessage = false;
           this.user_token = response.data.token;
           localStorage.setItem(
             "user_token",
@@ -79,9 +92,11 @@ export default {
         })
         .catch(error => {
           this.displayErrorMessage = true;
-          setTimeout(() => {
-            this.displayErrorMessage = false;
-          }, 2000);
+          this.loading = false;
+          // setTimeout(() => {
+          //   this.displayErrorMessage = false;
+          // }, 2000);
+          console.log(error)
           this.message = error.message;
         });
     }
